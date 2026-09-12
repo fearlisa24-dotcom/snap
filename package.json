@@ -1,0 +1,13 @@
+{
+  "name": "snapchat-web-app",
+  "version": "1.0.0",
+  "description": "Full-stack Snapchat Web application with backend authentication, account directory, and 12-hour disappearing media messages.",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.116.0"
+  }
+}
