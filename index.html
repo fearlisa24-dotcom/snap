@@ -3931,7 +3931,7 @@
       </form>
 
       <div class="auth-demo-accounts-pill">
-        💡 Quick Demo: <span onclick="window.quickFillAuth('lo_writer', 'taboo123')">LO (@lo_writer)</span> · <span onclick="window.quickFillAuth('emmanuel', 'password123')">Emmanuel (@emmanuel)</span>
+        ✨ Fresh Start: Sign up with your username to create your account!
       </div>
     </div>
   </div>
@@ -8090,15 +8090,8 @@
     const afPendingContainer = document.getElementById('afPendingContainer');
     const afPendingBadge = document.getElementById('afPendingBadge');
 
-    // Real Supabase Users Pre-seeded Cache (0ms instant render)
-    let realSupabaseUsersList = [
-      { id: '106c7c59-8682-47ee-888b-5e0cfb75204d', username: 'lo_writer', fullName: 'LO (Novelist)', avatar: '✍️', campus: 'Columbia MFA' },
-      { id: 'be37e4ae-37e5-4064-8b32-f3f22bcdac5f', username: 'emmanuel', fullName: 'Emmanuel Adeyemi', avatar: '🧑🏾‍💼', campus: 'Georgia Tech' },
-      { id: 'e31bf833-57cc-4af0-8090-e8e2978826d1', username: 'emmacomedy12gmailcom', fullName: 'Emmanuel Adeyemi', avatar: '🧑🏽‍💻', campus: 'Real Snapchat User' },
-      { id: 'a163f269-2ac6-4c5a-bf0b-8aea63cd79a0', username: 'joaoemanuel4629', fullName: 'joaoemanuel4629', avatar: '🧑🏽‍💻', campus: 'Real Snapchat User' },
-      { id: 'a71cf446-c6d5-4438-8b89-dc8db94966d2', username: '23efamiluacnmlmetbie', fullName: 'Testbot', avatar: '🧑🏽‍💻', campus: 'Real Member' },
-      { id: '382a6efd-10e6-4c79-ba0e-47d26dc9d7cb', username: 'emmanuelCEO', fullName: 'emmanuelCEO', avatar: '🧑🏽‍💻', campus: 'Real Member' }
-    ];
+    // Real Supabase Users Cache (dynamically populated from Supabase Auth)
+    let realSupabaseUsersList = [];
 
     async function fetchRealSupabaseUsers() {
       // Background async update so UI is NEVER blocked
