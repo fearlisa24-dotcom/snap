@@ -550,34 +550,192 @@
       transition: background 0.15s;
     }
     .prof-edit-avatar-btn:hover { background: rgba(0,0,0,0.1); }
-    .prof-avatar-picker {
+
+    /* Snapchat Bitmoji Studio Customizer */
+    .prof-avatar-picker.bitmoji-studio {
       background: #FFF;
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 16px;
-      margin: 8px 0 4px;
+      margin: 10px 0 6px;
       border: 1px solid #E5E7EB;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+      max-height: 480px;
+      overflow-y: auto;
     }
-    .prof-avatar-picker-title {
-      font-size: 13px;
+    .bm-studio-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #F3F4F6;
+    }
+    .bm-studio-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.01em;
+    }
+    .bm-studio-close {
+      background: #F3F4F6;
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      font-size: 12px;
       font-weight: 700;
-      color: #374151;
-      margin-bottom: 10px;
-      text-align: center;
+      color: #6B7280;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .bm-preview-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, #FFFDE0 0%, #FFFBEB 100%);
+      border: 2px dashed #FDE047;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .bm-preview-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      background: #FFF;
+      overflow: hidden;
+    }
+    .bm-preview-avatar img, .bm-preview-avatar svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .bm-preview-hint {
+      font-size: 11px;
+      color: #78716C;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+    .bm-tabs {
+      display: flex;
+      gap: 4px;
+      background: #F3F4F6;
+      padding: 3px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .bm-tab {
+      flex: 1;
+      padding: 6px 4px;
+      border: none;
+      background: transparent;
+      border-radius: 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #4B5563;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .bm-tab.active {
+      background: #FFF;
+      color: #111827;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .bm-tab-pane {
+      display: none;
+      animation: fadeIn 0.15s ease-out;
+    }
+    .bm-tab-pane.active { display: block; }
+    .bm-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .bm-swatches-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .bm-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 3px solid #FFF;
+      box-shadow: 0 0 0 1.5px #E5E7EB;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .bm-swatch:hover { transform: scale(1.1); }
+    .bm-swatch.active { box-shadow: 0 0 0 2.5px #0084FF; transform: scale(1.15); }
+    .bm-styles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .bm-style-card {
+      background: #F9FAFB;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 8px 4px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .bm-style-card span.bm-icon { font-size: 20px; }
+    .bm-style-card:hover { border-color: #FFFC00; background: #FFFDE0; }
+    .bm-style-card.active { border-color: #0084FF; background: #EFF6FF; color: #0084FF; font-weight: 800; }
+    .bm-actions {
+      margin-top: 14px;
+    }
+    .bm-save-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #FFFC00 0%, #FBBF24 100%);
+      border: none;
+      border-radius: 14px;
+      padding: 10px;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #18181C;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(245, 158, 11, 0.25);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .bm-save-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(245, 158, 11, 0.35); }
+    .bm-save-btn:active { transform: scale(0.98); }
+
     .prof-avatar-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 6px;
+      margin-bottom: 8px;
     }
     .prof-avatar-option {
-      width: 42px;
-      height: 42px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 2px solid transparent;
       background: #F3F4F6;
-      font-size: 22px;
+      font-size: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -585,33 +743,21 @@
       transition: border-color 0.15s, transform 0.1s;
     }
     .prof-avatar-option:hover { border-color: #FFFC00; transform: scale(1.1); }
-    .prof-avatar-option.selected { border-color: #FFFC00; background: #FFFDE0; }
+    .prof-avatar-option.selected { border-color: #0084FF; background: #EFF6FF; }
     .prof-avatar-custom-row {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
     }
     .prof-avatar-custom-input {
       flex: 1;
       border: 1.5px solid #D1D5DB;
-      border-radius: 12px;
-      padding: 8px 12px;
-      font-size: 18px;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 14px;
       text-align: center;
       outline: none;
     }
-    .prof-avatar-custom-input:focus { border-color: #FFFC00; }
-    .prof-avatar-save-btn {
-      background: #FFFC00;
-      border: none;
-      border-radius: 12px;
-      padding: 8px 18px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      color: #18181C;
-    }
-    .prof-avatar-save-btn:hover { background: #F0EB00; }
 
     .friend-right-action {
       flex-shrink: 0;
@@ -1043,9 +1189,22 @@
     .spotlight-play-btn:hover { transform: translateY(-50%) scale(1.05); }
     .spotlight-play-btn:active { transform: translateY(-50%) scale(0.94); }
     .spotlight-play-btn svg { display: block; }
-    .camera-viewport.cam-live .spotlight-play-btn { display: none; }
-
+    /* Keep spotlight button always visible even when camera is active */
     .app-shell.spotlight-open .spotlight-play-btn { display: none; }
+
+    .chat-header-btn.chat-spotlight-btn {
+      color: #E11D48;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 4px;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .chat-header-btn.chat-spotlight-btn:hover {
+      transform: scale(1.1);
+      background: rgba(225, 29, 72, 0.1);
+    }
 
     .spotlight-column {
       display: none;
@@ -3803,13 +3962,57 @@
           <button type="button" class="prof-edit-avatar-btn" id="profEditAvatarBtn" title="Edit Avatar">✏️ Edit</button>
         </div>
 
-        <!-- Avatar Picker Modal -->
-        <div class="prof-avatar-picker" id="profAvatarPicker" style="display:none;">
-          <div class="prof-avatar-picker-title">Pick your avatar</div>
-          <div class="prof-avatar-grid" id="profAvatarGrid"></div>
-          <div class="prof-avatar-custom-row">
-            <input type="text" class="prof-avatar-custom-input" id="profAvatarCustomInput" placeholder="Or type any emoji…" maxlength="4" />
-            <button type="button" class="prof-avatar-save-btn" id="profAvatarSaveBtn">Save</button>
+        <!-- Snapchat Bitmoji Studio Customizer Modal -->
+        <div class="prof-avatar-picker bitmoji-studio" id="profAvatarPicker" style="display:none;">
+          <div class="bm-studio-header">
+            <span class="bm-studio-title">Snapchat Bitmoji Studio ✨</span>
+            <button type="button" class="bm-studio-close" id="bmStudioCloseBtn" title="Close">✕</button>
+          </div>
+
+          <!-- Live Preview Character -->
+          <div class="bm-preview-box">
+            <div class="bm-preview-avatar" id="bmPreviewAvatar"></div>
+            <div class="bm-preview-hint">Tap any tone, hair, or outfit below to customize</div>
+          </div>
+
+          <!-- Studio Tabs -->
+          <div class="bm-tabs">
+            <button type="button" class="bm-tab active" data-tab="skin">🎨 Skin</button>
+            <button type="button" class="bm-tab" data-tab="hair">💇 Hair</button>
+            <button type="button" class="bm-tab" data-tab="vibe">🕶️ Vibe</button>
+            <button type="button" class="bm-tab" data-tab="presets">🎭 Presets</button>
+          </div>
+
+          <!-- Tab 1: Skin Tone -->
+          <div class="bm-tab-pane active" id="bmPaneSkin">
+            <div class="bm-section-label">Select Skin Tone</div>
+            <div class="bm-swatches-row" id="bmSkinSwatches"></div>
+          </div>
+
+          <!-- Tab 2: Hair Style & Color -->
+          <div class="bm-tab-pane" id="bmPaneHair">
+            <div class="bm-section-label">Hair Color</div>
+            <div class="bm-swatches-row" id="bmHairColors"></div>
+            <div class="bm-section-label" style="margin-top:10px;">Hair Style</div>
+            <div class="bm-styles-grid" id="bmHairStyles"></div>
+          </div>
+
+          <!-- Tab 3: Outfit & Vibe -->
+          <div class="bm-tab-pane" id="bmPaneVibe">
+            <div class="bm-section-label">Outfit / Character Vibe</div>
+            <div class="bm-styles-grid" id="bmVibeGrid"></div>
+          </div>
+
+          <!-- Tab 4: Quick Presets / Emoji -->
+          <div class="bm-tab-pane" id="bmPanePresets">
+            <div class="prof-avatar-grid" id="profAvatarGrid"></div>
+            <div class="prof-avatar-custom-row">
+              <input type="text" class="prof-avatar-custom-input" id="profAvatarCustomInput" placeholder="Or type any emoji…" maxlength="4" />
+            </div>
+          </div>
+
+          <div class="bm-actions">
+            <button type="button" class="bm-save-btn" id="profAvatarSaveBtn">Save Bitmoji Avatar ✨</button>
           </div>
         </div>
 
@@ -4198,6 +4401,7 @@
           </div>
 
           <div class="chat-header-right">
+            <button class="chat-header-btn chat-spotlight-btn" id="chatHeaderSpotlightBtn" title="Watch Spotlight">▶</button>
             <button class="chat-header-btn" title="More Options">⋮</button>
           </div>
         </div>
@@ -5096,28 +5300,69 @@
     const placeholder = document.getElementById('cameraPlaceholder');
     const captureBtn = document.getElementById('captureBtn');
 
+    let activeSnapTargetChatId = null;
+
     function isChatOpen() {
       return chatStage && chatStage.style.display === 'flex';
     }
 
-    function showCamera() {
+    // PRIVACY: Completely stop webcam hardware stream so camera light turns off
+    function stopCamera() {
+      if (video && video.srcObject) {
+        try {
+          const tracks = video.srcObject.getTracks();
+          tracks.forEach(track => track.stop());
+        } catch (_) {}
+        video.srcObject = null;
+      }
+      if (video) video.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'flex';
+      if (cameraViewport) cameraViewport.classList.remove('cam-live');
+    }
+
+    function showCamera(targetChatId = null) {
+      if (targetChatId && typeof targetChatId === 'string') {
+        activeSnapTargetChatId = targetChatId;
+      } else {
+        const activeRow = document.querySelector('.friend-chat-item.active');
+        if (activeRow && activeRow.dataset.chat) {
+          activeSnapTargetChatId = activeRow.dataset.chat;
+        }
+      }
       chatStage.style.display = 'none';
       cameraViewport.style.display = 'flex';
-      document.querySelectorAll('.friend-chat-item').forEach(row => row.classList.remove('active'));
+
+      // Keep active friend highlighted so user knows who the snap is going to
+      if (activeSnapTargetChatId) {
+        const targetRow = document.querySelector(`.friend-chat-item[data-chat="${activeSnapTargetChatId}"]`);
+        if (targetRow) {
+          document.querySelectorAll('.friend-chat-item').forEach(r => r.classList.remove('active'));
+          targetRow.classList.add('active');
+        }
+      }
+
+      // Automatically initialize camera preview only when viewing camera
+      initCamera();
     }
 
     const snapGhostHomeBtn = document.getElementById('snapGhostHomeBtn');
     if (snapGhostHomeBtn) {
-      snapGhostHomeBtn.addEventListener('click', showCamera);
+      snapGhostHomeBtn.addEventListener('click', () => showCamera());
     }
 
     function showChat() {
+      // Shuts off webcam immediately so users never feel stalked
+      stopCamera();
       cameraViewport.style.display = 'none';
       chatStage.style.display = 'flex';
     }
 
-    backToCamBtn.addEventListener('click', showCamera);
-    openCamMiniBtn.addEventListener('click', showCamera);
+    backToCamBtn.addEventListener('click', () => showCamera());
+    openCamMiniBtn.addEventListener('click', () => {
+      const activeRow = document.querySelector('.friend-chat-item.active');
+      const currentChatId = activeRow ? activeRow.dataset.chat : null;
+      showCamera(currentChatId);
+    });
 
     const YOUTUBE_DATA_API_KEY = 'AIzaSyDV9pQngAgMAwN6VLSfYYJV22uJQ4bYigo';
     const SpotlightRanking = window.SpotlightRanking;
@@ -5736,6 +5981,8 @@
     }
 
     if (spotlightPlayBtn) spotlightPlayBtn.addEventListener('click', openSpotlight);
+    const chatHeaderSpotlightBtn = document.getElementById('chatHeaderSpotlightBtn');
+    if (chatHeaderSpotlightBtn) chatHeaderSpotlightBtn.addEventListener('click', openSpotlight);
     if (spotlightCloseBtn) spotlightCloseBtn.addEventListener('click', closeSpotlight);
     if (spotlightMuteBtn) {
       spotlightMuteBtn.addEventListener('click', () => {
@@ -5886,6 +6133,12 @@
     }
 
     async function initCamera() {
+      if (video && video.srcObject && video.srcObject.active) {
+        video.style.display = 'block';
+        placeholder.style.display = 'none';
+        cameraViewport.classList.add('cam-live');
+        return;
+      }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         video.srcObject = stream;
@@ -5893,7 +6146,7 @@
         placeholder.style.display = 'none';
         cameraViewport.classList.add('cam-live');
       } catch (err) {
-        alert("Camera preview ready: connect webcam or grant permission.");
+        console.warn("Camera preview unavailable or permission denied:", err);
       }
     }
 
@@ -6144,7 +6397,7 @@
           entry.dataset.msgId = m.id || '';
 
           const isMe = (m.sender === 'me');
-          const senderLabel = isMe ? 'ME' : friendHeaderName;
+          const senderLabel = isMe ? 'ME' : (m.senderName || friendHeaderName);
           const senderClass = isMe ? 'is-me' : 'is-friend';
 
           const headerHtml = `
@@ -6505,14 +6758,23 @@
       updateSnapCardDOM(card, snapObj);
 
       card.addEventListener('click', () => {
-        if (snapObj.status === 'expired') return;
-        openSnapViewer(snapObj, card, chatId, snapObj.status !== 'unread');
+        if (snapObj.status === 'expired') {
+          showSnapToast('Snap has expired ⏱️');
+          return;
+        }
+        if (snapObj.status === 'opened') {
+          showSnapToast('Snap already viewed 🔒 Snaps can only be opened once!');
+          return;
+        }
+        openSnapViewer(snapObj, card, chatId, false);
       });
 
       card.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        if (snapObj.status === 'expired') return;
-        openSnapViewer(snapObj, card, chatId, true);
+        if (snapObj.status === 'opened') {
+          showSnapToast('Snap already viewed 🔒 Snaps can only be opened once!');
+          return;
+        }
       });
 
       return card;
@@ -6549,7 +6811,8 @@
         card.innerHTML = `
           ${ICON_OPENED_HTML}
           <div class="snap-card-body">
-            <span class="snap-title-opened">${isMe ? 'Opened' : 'Opened · Tap to replay'}</span>
+            <span class="snap-title-opened">${isMe ? 'Opened' : 'Opened'}</span>
+            <span class="snap-subtitle-opened" style="font-size:11px; color:#9CA3AF; margin-top:2px;">Viewed once · Disappeared 🔒</span>
             ${badgeHtml}
           </div>
         `;
@@ -6649,9 +6912,10 @@
 
     captureBtn.addEventListener('click', () => {
       const activeRow = document.querySelector('.friend-chat-item.active');
-      const chatId = activeRow ? (activeRow.dataset.chat || 'myai').toLowerCase() : 'myai';
-      const friendUserId = activeRow ? activeRow.dataset.userId : null;
-      const friendHandle = activeRow ? (activeRow.dataset.handle || activeRow.dataset.chat || activeRow.dataset.name || '') : '';
+      const chatId = (activeSnapTargetChatId || (activeRow ? (activeRow.dataset.chat || 'myai') : 'myai')).toLowerCase();
+      const targetRow = document.querySelector(`.friend-chat-item[data-chat="${chatId}"]`);
+      const friendUserId = targetRow ? targetRow.dataset.userId : (activeRow ? activeRow.dataset.userId : null);
+      const friendHandle = targetRow ? (targetRow.dataset.handle || targetRow.dataset.chat || targetRow.dataset.name || '') : (activeRow ? (activeRow.dataset.handle || activeRow.dataset.chat || activeRow.dataset.name || '') : '');
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
@@ -6710,6 +6974,12 @@
 
       dismissReplyBanner();
       showChat();
+      if (targetRow) {
+        document.querySelectorAll('.friend-chat-item').forEach(r => r.classList.remove('active'));
+        targetRow.classList.add('active');
+        if (activeChatName) activeChatName.textContent = targetRow.dataset.name || friendHandle;
+        if (activeChatAvatar) activeChatAvatar.textContent = targetRow.dataset.initial || '👤';
+      }
       renderConversation(chatId);
       updateSidebarPreview(chatId);
       showSnapToast(`📸 Snap sent to @${friendHandle || 'friend'}!`);
@@ -6787,6 +7057,9 @@
       const status = row.dataset.status;
       const chatId = row.dataset.chat;
       const friendUserId = row.dataset.userId;
+
+      activeSnapTargetChatId = chatId;
+      stopCamera();
 
       if (activeChatName) activeChatName.textContent = name;
       if (activeChatStatus) {
@@ -6911,9 +7184,10 @@
       if (camBtn) {
         camBtn.addEventListener('click', (e) => {
           e.stopPropagation();
+          activeSnapTargetChatId = row.dataset.chat;
           document.querySelectorAll('.friend-chat-item').forEach(r => r.classList.remove('active'));
           row.classList.add('active');
-          showCamera();
+          showCamera(row.dataset.chat);
           showSnapToast(`Camera ready for ${row.dataset.name}! 📸 Tap shutter to send snap.`);
         });
       }
@@ -7182,6 +7456,43 @@
       chatInput.focus();
       saveConversationsToStorage();
       updateSidebarPreview(chatId);
+
+      // Group chat handling: simulate lively member responses
+      if (chatId.startsWith('grp_') || activeRow?.dataset?.isGroup === '1') {
+        const currentGroup = window._groupChats ? window._groupChats[chatId] : null;
+        if (currentGroup && currentGroup.members && currentGroup.members.length > 0) {
+          const responder = currentGroup.members[Math.floor(Math.random() * currentGroup.members.length)];
+          const sampleReplies = [
+            `Haha true! 😂`,
+            `Wait fr?? Let's go! 🔥`,
+            `💯 agreeing with you on that`,
+            `Send a snap of it!! 📸`,
+            `Bet, see you all there 🙌`,
+            `Love that idea! 🚀`
+          ];
+          const chosenReply = sampleReplies[Math.floor(Math.random() * sampleReplies.length)];
+          setTimeout(() => {
+            if (!conversations[chatId]) conversations[chatId] = [];
+            const rTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            conversations[chatId].push({
+              type: 'text',
+              sender: 'friend',
+              senderName: responder.name,
+              senderAvatar: responder.avatar,
+              text: chosenReply,
+              time: rTime,
+              sentAt: Date.now()
+            });
+            saveConversationsToStorage();
+            const nowActive = document.querySelector('.friend-chat-item.active');
+            if (nowActive && nowActive.dataset.chat === chatId) {
+              renderConversation(chatId);
+            }
+            updateSidebarPreview(chatId);
+          }, 1400);
+        }
+        return;
+      }
 
       // If chatting with a human friend, dispatch P2P in background
       if (chatId !== 'myai') {
@@ -7488,9 +7799,10 @@
     // Send Voice Note to chat stream
     dispatchVoiceNoteBtn.addEventListener('click', async () => {
       const activeRow = document.querySelector('.friend-chat-item.active');
-      const chatId = activeRow ? (activeRow.dataset.chat || 'myai').toLowerCase() : 'myai';
-      const friendUserId = activeRow ? activeRow.dataset.userId : null;
-      const friendHandle = activeRow ? (activeRow.dataset.handle || activeRow.dataset.chat || activeRow.dataset.name || '') : '';
+      const chatId = (activeSnapTargetChatId || (activeRow ? (activeRow.dataset.chat || 'myai') : 'myai')).toLowerCase();
+      const targetRow = document.querySelector(`.friend-chat-item[data-chat="${chatId}"]`);
+      const friendUserId = targetRow ? targetRow.dataset.userId : (activeRow ? activeRow.dataset.userId : null);
+      const friendHandle = targetRow ? (targetRow.dataset.handle || targetRow.dataset.chat || targetRow.dataset.name || '') : (activeRow ? (activeRow.dataset.handle || activeRow.dataset.chat || activeRow.dataset.name || '') : '');
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
@@ -9666,10 +9978,51 @@
         }
       });
 
+      const GROUP_STORAGE_KEY = 'snap_cached_group_chats';
+
+      function saveGroupsToStorage() {
+        try { localStorage.setItem(GROUP_STORAGE_KEY, JSON.stringify(groupChats)); } catch (_) {}
+      }
+
+      function loadGroupsFromStorage() {
+        try {
+          const raw = localStorage.getItem(GROUP_STORAGE_KEY);
+          if (raw) {
+            const data = JSON.parse(raw);
+            if (data && typeof data === 'object') {
+              Object.keys(data).forEach(gid => {
+                if (!groupChats[gid]) {
+                  groupChats[gid] = data[gid];
+                  addGroupToSidebar(gid, data[gid].name, data[gid].members);
+                }
+              });
+            }
+          }
+        } catch (_) {}
+
+        // Seed demo group chat if none exists
+        if (Object.keys(groupChats).length === 0) {
+          const demoGid = 'grp_squad_main';
+          const demoMembers = [
+            { chatId: 'emmanuel', name: 'Emmanuel Adeyemi', avatar: '🧑🏽‍💻' },
+            { chatId: 'sarah_m', name: 'Sarah Miller', avatar: '👩🏼' }
+          ];
+          groupChats[demoGid] = { name: 'The Squad 🚀', members: demoMembers };
+          if (!conversations[demoGid]) {
+            conversations[demoGid] = [
+              { type: 'text', sender: 'friend', senderName: 'Sarah Miller', text: 'Hey squad! Anyone down for tacos tonight? 🌮', time: '5:10 PM', sentAt: Date.now() - 120000 },
+              { type: 'text', sender: 'friend', senderName: 'Emmanuel Adeyemi', text: 'Count me in! Just finished up coding.', time: '5:12 PM', sentAt: Date.now() - 60000 }
+            ];
+          }
+          addGroupToSidebar(demoGid, 'The Squad 🚀', demoMembers);
+          saveGroupsToStorage();
+        }
+      }
+
       // Create group
       gcCreateBtn.addEventListener('click', () => {
         const name = gcNameInput.value.trim();
-        if (!name || groupSelected.size < 2) return;
+        if (!name || groupSelected.size < 1) return;
 
         const groupId = 'grp_' + Date.now();
         const friends = getSidebarFriends();
@@ -9678,12 +10031,14 @@
         groupChats[groupId] = { name, members };
         conversations[groupId] = [];
 
-        // Add group row to sidebar
+        // Save & Add group row to sidebar
+        saveGroupsToStorage();
         addGroupToSidebar(groupId, name, members);
 
         groupModal.classList.remove('is-visible');
         groupSelected.clear();
         gcNameInput.value = '';
+        showSnapToast(`Group "${name}" created! 🎉`);
       });
 
       // Add a group chat row to the sidebar
@@ -9784,6 +10139,9 @@
           }
         });
       }
+
+      // Load and restore all saved group chats
+      setTimeout(loadGroupsFromStorage, 200);
 
       // Expose helpers for realtime group messages (optional future use)
       window._groupChats       = groupChats;
@@ -9940,86 +10298,368 @@
     // ================================================================
     //  EDIT AVATAR PICKER
     // ================================================================
+    //  SNAPCHAT BITMOJI STUDIO ENGINE (Skin Tones, Hair Colors, Outfits)
+    // ================================================================
     (function() {
-      const AVATAR_OPTIONS = [
-        '✍️', '👻', '🧑🏽‍💻', '🧑🏾‍💼', '👩🏼', '😎',
-        '🔥', '💀', '🦊', '🐺', '🎭', '🌙',
-        '👑', '💎', '🎯', '🪐', '⚡', '🌊',
-        '🎧', '🎮', '📚', '🏀', '🎬', '🍕'
-      ];
-
       const editBtn = document.getElementById('profEditAvatarBtn');
       const picker = document.getElementById('profAvatarPicker');
-      const grid = document.getElementById('profAvatarGrid');
-      const customInput = document.getElementById('profAvatarCustomInput');
+      const closeBtn = document.getElementById('bmStudioCloseBtn');
+      const previewAvatar = document.getElementById('bmPreviewAvatar');
       const saveBtn = document.getElementById('profAvatarSaveBtn');
+      const skinSwatches = document.getElementById('bmSkinSwatches');
+      const hairColorsContainer = document.getElementById('bmHairColors');
+      const hairStylesContainer = document.getElementById('bmHairStyles');
+      const vibeGrid = document.getElementById('bmVibeGrid');
+      const presetGrid = document.getElementById('profAvatarGrid');
+      const customInput = document.getElementById('profAvatarCustomInput');
 
-      if (!editBtn || !picker || !grid) return;
+      if (!editBtn || !picker) return;
 
-      let selectedAvatar = null;
+      // Bitmoji Customization State
+      const currentBitmoji = {
+        skin: '#F5D0B5',
+        hairColor: '#18181B',
+        hairStyle: 'waves',
+        vibe: 'sweater',
+        preset: null
+      };
 
-      // Build grid
-      AVATAR_OPTIONS.forEach(emoji => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'prof-avatar-option';
-        btn.textContent = emoji;
-        btn.addEventListener('click', () => {
-          grid.querySelectorAll('.prof-avatar-option').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-          selectedAvatar = emoji;
-          if (customInput) customInput.value = '';
+      const SKIN_TONES = [
+        { name: 'Fair', color: '#FFDFD3' },
+        { name: 'Light', color: '#F5D0B5' },
+        { name: 'Warm', color: '#D49B6A' },
+        { name: 'Tan', color: '#9E6038' },
+        { name: 'Deep', color: '#4E2D1A' }
+      ];
+
+      const HAIR_COLORS = [
+        { name: 'Black', color: '#18181B' },
+        { name: 'Brown', color: '#451A03' },
+        { name: 'Blonde', color: '#EAB308' },
+        { name: 'Auburn', color: '#B45309' },
+        { name: 'Silver', color: '#E2E8F0' },
+        { name: 'Blue', color: '#2563EB' },
+        { name: 'Pink', color: '#EC4899' }
+      ];
+
+      const HAIR_STYLES = [
+        { id: 'waves', name: 'Short Waves', icon: '🧑' },
+        { id: 'buzz', name: 'Buzz Cut', icon: '🧑‍🦲' },
+        { id: 'afro', name: 'Curly Afro', icon: '🧑‍🦱' },
+        { id: 'part', name: 'Side Part', icon: '👱' },
+        { id: 'long', name: 'Long Flow', icon: '👩' },
+        { id: 'dreads', name: 'Braids/Locs', icon: '🦱' }
+      ];
+
+      const VIBES = [
+        { id: 'sweater', name: 'Cozy Sweater', icon: '🧥' },
+        { id: 'spy', name: 'Stealth Spy', icon: '🥷' },
+        { id: 'suit', name: 'Black Suit', icon: '👔' },
+        { id: 'hoodie', name: 'Street Hoodie', icon: '🧢' },
+        { id: 'royal', name: 'Golden Crown', icon: '👑' },
+        { id: 'shades', name: 'Cool Shades', icon: '😎' }
+      ];
+
+      const PRESETS = [
+        '✍️', '🧑🏽‍💻', '🧑🏾‍💼', '👩🏼', '😎', '👻',
+        '🔥', '💀', '🦊', '🐺', '🎭', '🌙',
+        '👑', '💎', '🎯', '🪐', '⚡', '🌊'
+      ];
+
+      // Generate authentic high-res SVG Bitmoji character
+      function generateBitmojiSvg(cfg) {
+        const { skin, hairColor, hairStyle, vibe } = cfg;
+
+        // Hair SVG Path definitions
+        let hairSvg = '';
+        if (hairStyle === 'buzz') {
+          hairSvg = `<path d="M28,45 C28,26 38,20 50,20 C62,20 72,26 72,45 C72,36 62,23 50,23 C38,23 28,36 28,45 Z" fill="${hairColor}"/>`;
+        } else if (hairStyle === 'afro') {
+          hairSvg = `
+            <circle cx="50" cy="38" r="28" fill="${hairColor}"/>
+            <circle cx="30" cy="36" r="14" fill="${hairColor}"/>
+            <circle cx="70" cy="36" r="14" fill="${hairColor}"/>
+            <circle cx="50" cy="22" r="14" fill="${hairColor}"/>
+          `;
+        } else if (hairStyle === 'part') {
+          hairSvg = `
+            <path d="M26,44 C26,22 40,16 52,16 C66,16 74,24 74,44 C72,30 62,22 50,22 C36,22 28,32 26,44 Z" fill="${hairColor}"/>
+            <path d="M30,28 C42,20 62,22 72,34" stroke="${hairColor}" stroke-width="4" stroke-linecap="round"/>
+          `;
+        } else if (hairStyle === 'long') {
+          hairSvg = `
+            <path d="M24,44 C24,20 38,15 50,15 C62,15 76,20 76,44 C76,70 68,76 68,76 C68,76 72,50 70,38 C68,26 60,20 50,20 C40,20 32,26 30,38 C28,50 32,76 32,76 C32,76 24,70 24,44 Z" fill="${hairColor}"/>
+          `;
+        } else if (hairStyle === 'dreads') {
+          hairSvg = `
+            <path d="M26,42 C26,20 40,16 50,16 C60,16 74,20 74,42 Z" fill="${hairColor}"/>
+            <line x1="28" y1="36" x2="24" y2="60" stroke="${hairColor}" stroke-width="4" stroke-linecap="round"/>
+            <line x1="36" y1="30" x2="30" y2="64" stroke="${hairColor}" stroke-width="4" stroke-linecap="round"/>
+            <line x1="64" y1="30" x2="70" y2="64" stroke="${hairColor}" stroke-width="4" stroke-linecap="round"/>
+            <line x1="72" y1="36" x2="76" y2="60" stroke="${hairColor}" stroke-width="4" stroke-linecap="round"/>
+          `;
+        } else {
+          // Default: Short Waves
+          hairSvg = `
+            <path d="M26,44 C26,22 36,17 50,17 C64,17 74,22 74,44 C70,30 62,21 50,21 C38,21 30,30 26,44 Z" fill="${hairColor}"/>
+            <path d="M32,32 C40,24 60,24 68,32" stroke="${hairColor}" stroke-width="5" stroke-linecap="round"/>
+          `;
+        }
+
+        // Vibe / Outfit SVG
+        let outfitSvg = '';
+        if (vibe === 'spy') {
+          outfitSvg = `
+            <!-- Trenchcoat collar & dark shades -->
+            <path d="M22,86 L36,70 L50,80 L64,70 L78,86 C65,96 35,96 22,86 Z" fill="#18181B"/>
+            <path d="M42,75 L50,82 L58,75 L50,88 Z" fill="#71717A"/>
+            <!-- Dark Aviator Shades -->
+            <rect x="33" y="44" width="15" height="10" rx="3" fill="#18181B"/>
+            <rect x="52" y="44" width="15" height="10" rx="3" fill="#18181B"/>
+            <line x1="48" y1="48" x2="52" y2="48" stroke="#18181B" stroke-width="2"/>
+          `;
+        } else if (vibe === 'suit') {
+          outfitSvg = `
+            <!-- Suit jacket, white shirt & red tie -->
+            <path d="M20,86 L34,70 L50,78 L66,70 L80,86 C66,96 34,96 20,86 Z" fill="#09090B"/>
+            <polygon points="43,73 50,78 57,73 54,88 46,88" fill="#FFFFFF"/>
+            <polygon points="48,76 52,76 53,88 50,91 47,88" fill="#DC2626"/>
+          `;
+        } else if (vibe === 'hoodie') {
+          outfitSvg = `
+            <!-- Snapchat Yellow Hoodie -->
+            <path d="M20,84 C30,70 70,70 80,84 C70,96 30,96 20,84 Z" fill="#FFFC00"/>
+            <circle cx="50" cy="74" r="14" fill="none" stroke="#CA8A04" stroke-width="2.5"/>
+          `;
+        } else if (vibe === 'royal') {
+          outfitSvg = `
+            <!-- Royal purple mantle & golden crown -->
+            <path d="M20,86 C30,72 70,72 80,86 C70,96 30,96 20,86 Z" fill="#6B21A8"/>
+            <polygon points="34,22 42,12 50,20 58,12 66,22 34,22" fill="#FACC15" stroke="#CA8A04" stroke-width="1.5"/>
+          `;
+        } else if (vibe === 'shades') {
+          outfitSvg = `
+            <!-- Cool shades & tee -->
+            <path d="M20,86 C30,72 70,72 80,86 C70,96 30,96 20,86 Z" fill="#3B82F6"/>
+            <rect x="33" y="44" width="15" height="9" rx="3" fill="#1E293B"/>
+            <rect x="52" y="44" width="15" height="9" rx="3" fill="#1E293B"/>
+            <line x1="48" y1="47" x2="52" y2="47" stroke="#1E293B" stroke-width="2"/>
+          `;
+        } else {
+          // Default: Cozy Burgundy Writer's Sweater
+          outfitSvg = `
+            <path d="M20,86 C28,70 72,70 80,86 C70,96 30,96 20,86 Z" fill="#881337"/>
+            <path d="M38,72 C44,78 56,78 62,72" stroke="#9F1239" stroke-width="3" fill="none"/>
+          `;
+        }
+
+        const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFC00"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#bgGrad)"/>
+  
+  <!-- Neck -->
+  <rect x="42" y="58" width="16" height="20" rx="6" fill="${skin}"/>
+  
+  <!-- Head / Face -->
+  <ellipse cx="50" cy="48" rx="21" ry="24" fill="${skin}"/>
+  
+  <!-- Ears -->
+  <circle cx="29" cy="48" r="5" fill="${skin}"/>
+  <circle cx="71" cy="48" r="5" fill="${skin}"/>
+  
+  <!-- Hair Base / Back -->
+  ${hairSvg}
+  
+  <!-- Eyes -->
+  <circle cx="42" cy="48" r="2.8" fill="#18181B"/>
+  <circle cx="58" cy="48" r="2.8" fill="#18181B"/>
+  <circle cx="43" cy="47" r="0.9" fill="#FFFFFF"/>
+  <circle cx="59" cy="47" r="0.9" fill="#FFFFFF"/>
+  
+  <!-- Eyebrows -->
+  <path d="M37,42 Q42,39 46,42" stroke="${hairColor}" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M54,42 Q58,39 63,42" stroke="${hairColor}" stroke-width="2" stroke-linecap="round" fill="none"/>
+  
+  <!-- Smile -->
+  <path d="M44,58 Q50,64 56,58" stroke="#9E4A28" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  
+  <!-- Outfit / Accessories -->
+  ${outfitSvg}
+</svg>`.trim();
+
+        return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+      }
+
+      // Update Live Preview
+      function updateLivePreview() {
+        if (!previewAvatar) return;
+        if (currentBitmoji.preset) {
+          previewAvatar.innerHTML = `<span style="font-size:42px;">${currentBitmoji.preset}</span>`;
+        } else {
+          const dataUrl = generateBitmojiSvg(currentBitmoji);
+          previewAvatar.innerHTML = `<img src="${dataUrl}" alt="Bitmoji" style="width:100%; height:100%; border-radius:50%; object-fit:cover;"/>`;
+        }
+      }
+
+      // Render Skin Tone Swatches
+      SKIN_TONES.forEach(st => {
+        const sw = document.createElement('div');
+        sw.className = 'bm-swatch' + (st.color === currentBitmoji.skin ? ' active' : '');
+        sw.style.background = st.color;
+        sw.title = st.name;
+        sw.addEventListener('click', () => {
+          skinSwatches.querySelectorAll('.bm-swatch').forEach(b => b.classList.remove('active'));
+          sw.classList.add('active');
+          currentBitmoji.skin = st.color;
+          currentBitmoji.preset = null;
+          updateLivePreview();
         });
-        grid.appendChild(btn);
+        skinSwatches.appendChild(sw);
       });
 
-      // Toggle picker visibility
+      // Render Hair Colors
+      HAIR_COLORS.forEach(hc => {
+        const sw = document.createElement('div');
+        sw.className = 'bm-swatch' + (hc.color === currentBitmoji.hairColor ? ' active' : '');
+        sw.style.background = hc.color;
+        sw.title = hc.name;
+        sw.addEventListener('click', () => {
+          hairColorsContainer.querySelectorAll('.bm-swatch').forEach(b => b.classList.remove('active'));
+          sw.classList.add('active');
+          currentBitmoji.hairColor = hc.color;
+          currentBitmoji.preset = null;
+          updateLivePreview();
+        });
+        hairColorsContainer.appendChild(sw);
+      });
+
+      // Render Hair Styles
+      HAIR_STYLES.forEach(hs => {
+        const card = document.createElement('div');
+        card.className = 'bm-style-card' + (hs.id === currentBitmoji.hairStyle ? ' active' : '');
+        card.innerHTML = `<span class="bm-icon">${hs.icon}</span><span>${hs.name}</span>`;
+        card.addEventListener('click', () => {
+          hairStylesContainer.querySelectorAll('.bm-style-card').forEach(b => b.classList.remove('active'));
+          card.classList.add('active');
+          currentBitmoji.hairStyle = hs.id;
+          currentBitmoji.preset = null;
+          updateLivePreview();
+        });
+        hairStylesContainer.appendChild(card);
+      });
+
+      // Render Vibes / Outfits
+      VIBES.forEach(v => {
+        const card = document.createElement('div');
+        card.className = 'bm-style-card' + (v.id === currentBitmoji.vibe ? ' active' : '');
+        card.innerHTML = `<span class="bm-icon">${v.icon}</span><span>${v.name}</span>`;
+        card.addEventListener('click', () => {
+          vibeGrid.querySelectorAll('.bm-style-card').forEach(b => b.classList.remove('active'));
+          card.classList.add('active');
+          currentBitmoji.vibe = v.id;
+          currentBitmoji.preset = null;
+          updateLivePreview();
+        });
+        vibeGrid.appendChild(card);
+      });
+
+      // Render Presets
+      PRESETS.forEach(p => {
+        const opt = document.createElement('button');
+        opt.type = 'button';
+        opt.className = 'prof-avatar-option';
+        opt.textContent = p;
+        opt.addEventListener('click', () => {
+          presetGrid.querySelectorAll('.prof-avatar-option').forEach(b => b.classList.remove('selected'));
+          opt.classList.add('selected');
+          currentBitmoji.preset = p;
+          if (customInput) customInput.value = '';
+          updateLivePreview();
+        });
+        presetGrid.appendChild(opt);
+      });
+
+      if (customInput) {
+        customInput.addEventListener('input', () => {
+          const val = customInput.value.trim();
+          if (val) {
+            currentBitmoji.preset = val;
+            updateLivePreview();
+          }
+        });
+      }
+
+      // Studio Tabs Switching
+      const tabs = picker.querySelectorAll('.bm-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const targetKey = tab.dataset.tab;
+          picker.querySelectorAll('.bm-tab-pane').forEach(pane => pane.classList.remove('active'));
+          const targetPane = picker.querySelector(`#bmPane${targetKey.charAt(0).toUpperCase() + targetKey.slice(1)}`);
+          if (targetPane) targetPane.classList.add('active');
+        });
+      });
+
+      // Toggle modal visibility
       editBtn.addEventListener('click', () => {
         const isVisible = picker.style.display !== 'none';
         picker.style.display = isVisible ? 'none' : 'block';
+        if (!isVisible) updateLivePreview();
       });
 
-      function applyAvatar(emoji) {
-        if (!emoji) return;
-        // Update current session
-        if (window.currentUserSession) window.currentUserSession.avatar = emoji;
-        // Persist
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          picker.style.display = 'none';
+        });
+      }
+
+      // Apply and save avatar
+      function applyAvatar(avatarVal) {
+        if (!avatarVal) return;
+        if (window.currentUserSession) window.currentUserSession.avatar = avatarVal;
+
         try {
           const sess = JSON.parse(localStorage.getItem('snap_active_session') || '{}');
-          sess.avatar = emoji;
+          sess.avatar = avatarVal;
           localStorage.setItem('snap_active_session', JSON.stringify(sess));
         } catch (_) {}
 
-        // Update all avatar displays
         if (typeof setAvatarContent === 'function') {
-          setAvatarContent(document.getElementById('profDrawerAvatar'), emoji, '👤');
-          setAvatarContent(document.getElementById('profDrawerMiniAvatar'), emoji, '👤');
-          setAvatarContent(document.getElementById('topBarAvatarIcon'), emoji, '👤');
-          setAvatarContent(document.getElementById('profPublicAvatar'), emoji, '👤');
+          setAvatarContent(document.getElementById('profDrawerAvatar'), avatarVal, '👤');
+          setAvatarContent(document.getElementById('profDrawerMiniAvatar'), avatarVal, '👤');
+          setAvatarContent(document.getElementById('topBarAvatarIcon'), avatarVal, '👤');
+          setAvatarContent(document.getElementById('profPublicAvatar'), avatarVal, '👤');
         } else {
           ['profDrawerAvatar', 'profDrawerMiniAvatar', 'topBarAvatarIcon', 'profPublicAvatar'].forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.textContent = emoji;
+            if (el) el.textContent = avatarVal;
           });
         }
 
         picker.style.display = 'none';
-        if (typeof showSnapToast === 'function') showSnapToast(`Avatar updated to ${emoji}! Looking fresh 😎`);
+        if (typeof showSnapToast === 'function') {
+          showSnapToast("Your custom Bitmoji has been saved! Looking sharp 🔥");
+        }
       }
 
-      // Save button handler
       if (saveBtn) {
         saveBtn.addEventListener('click', () => {
-          const custom = customInput && customInput.value.trim();
-          applyAvatar(custom || selectedAvatar);
+          const finalVal = currentBitmoji.preset || generateBitmojiSvg(currentBitmoji);
+          applyAvatar(finalVal);
         });
       }
 
-      // Also apply on grid click for instant feedback
-      grid.addEventListener('dblclick', (e) => {
-        const option = e.target.closest('.prof-avatar-option');
-        if (option) applyAvatar(option.textContent);
-      });
+      // Initialize preview on boot
+      updateLivePreview();
     })();
   </script>
 
