@@ -529,7 +529,89 @@
       font-weight: 700;
       color: #111111;
       margin-left: 2px;
+      font-size: 12px;
     }
+    .streak-fire-tag .streak-emoji { font-size: 13px; }
+    .streak-fire-tag .streak-count { font-size: 11.5px; font-weight: 800; color: #E8590C; }
+    .streak-warning { color: #DC2626 !important; animation: streakPulse 0.6s ease infinite alternate; }
+    @keyframes streakPulse { from { opacity: 1; } to { opacity: 0.5; } }
+
+    /* Avatar Picker */
+    .prof-edit-avatar-btn {
+      margin-top: 8px;
+      background: rgba(0,0,0,0.06);
+      border: 1px solid #E5E7EB;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #374151;
+      transition: background 0.15s;
+    }
+    .prof-edit-avatar-btn:hover { background: rgba(0,0,0,0.1); }
+    .prof-avatar-picker {
+      background: #FFF;
+      border-radius: 18px;
+      padding: 16px;
+      margin: 8px 0 4px;
+      border: 1px solid #E5E7EB;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .prof-avatar-picker-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .prof-avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .prof-avatar-option {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      background: #F3F4F6;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .prof-avatar-option:hover { border-color: #FFFC00; transform: scale(1.1); }
+    .prof-avatar-option.selected { border-color: #FFFC00; background: #FFFDE0; }
+    .prof-avatar-custom-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .prof-avatar-custom-input {
+      flex: 1;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+    }
+    .prof-avatar-custom-input:focus { border-color: #FFFC00; }
+    .prof-avatar-save-btn {
+      background: #FFFC00;
+      border: none;
+      border-radius: 12px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #18181C;
+    }
+    .prof-avatar-save-btn:hover { background: #F0EB00; }
 
     .friend-right-action {
       flex-shrink: 0;
@@ -3718,6 +3800,17 @@
 
         <div class="prof-bitmoji-stage">
           <div class="prof-bitmoji-figure" id="profDrawerAvatar">👤</div>
+          <button type="button" class="prof-edit-avatar-btn" id="profEditAvatarBtn" title="Edit Avatar">✏️ Edit</button>
+        </div>
+
+        <!-- Avatar Picker Modal -->
+        <div class="prof-avatar-picker" id="profAvatarPicker" style="display:none;">
+          <div class="prof-avatar-picker-title">Pick your avatar</div>
+          <div class="prof-avatar-grid" id="profAvatarGrid"></div>
+          <div class="prof-avatar-custom-row">
+            <input type="text" class="prof-avatar-custom-input" id="profAvatarCustomInput" placeholder="Or type any emoji…" maxlength="4" />
+            <button type="button" class="prof-avatar-save-btn" id="profAvatarSaveBtn">Save</button>
+          </div>
         </div>
 
         <div class="prof-identity">
@@ -4546,6 +4639,7 @@
                 });
               }
               saveConversationsToStorage();
+              if (typeof window.recordStreakReceived === 'function') window.recordStreakReceived(conversationKey);
               if (typeof updateSidebarPreview === 'function') updateSidebarPreview(conversationKey);
 
               // Ensure sender exists in sidebar (never switch active chat)
@@ -5052,7 +5146,7 @@
     const SPOTLIGHT_MULTI_REGION = true;
     const spotlightClientWatchdogMs = 4000;
     const spotlightClientFallbackThreshold = 2;
-    let spotlightClientForceYoutube = false;
+    let spotlightClientForceYoutube = true;
     let spotlightClientFailures = 0;
     const spotlightYoutubeFallbackMap = new Map();
     let spotlightNextCursor = null;
@@ -6611,6 +6705,7 @@
 
       if (!conversations[chatId]) conversations[chatId] = [];
       conversations[chatId].push(newSnap);
+      if (typeof window.recordStreakSnap === 'function') window.recordStreakSnap(chatId);
       saveConversationsToStorage();
 
       dismissReplyBanner();
@@ -7078,6 +7173,7 @@
         replyTo: replyData
       };
       conversations[chatId].push(newMsg);
+      if (typeof window.recordStreakSnap === 'function') window.recordStreakSnap(chatId);
 
       dismissReplyBanner();
       renderConversation(chatId);
@@ -9694,6 +9790,236 @@
       window._addGroupSidebar  = addGroupToSidebar;
       window._showGroupPill    = showGroupPill;
       window._hideGroupPill    = hideGroupPill;
+    })();
+
+    // ================================================================
+    //  SNAP STREAKS ENGINE — 24h cycle, 5h grace window, 🔥 counter
+    // ================================================================
+    (function() {
+      const STREAK_CYCLE_MS = 24 * 60 * 60 * 1000;
+      const STREAK_GRACE_MS = 5 * 60 * 60 * 1000;
+      const STREAK_STORAGE_KEY = 'snap_streaks';
+
+      function getStreaks() {
+        try {
+          const raw = localStorage.getItem(STREAK_STORAGE_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch (_) { return {}; }
+      }
+
+      function saveStreaks(streaks) {
+        try { localStorage.setItem(STREAK_STORAGE_KEY, JSON.stringify(streaks)); } catch (_) {}
+      }
+
+      // Record that current user sent a snap/message to a friend
+      window.recordStreakSnap = function(chatId) {
+        if (!chatId || chatId === 'myai') return;
+        const streaks = getStreaks();
+        const now = Date.now();
+        if (!streaks[chatId]) {
+          streaks[chatId] = { count: 1, lastSentAt: now, lastReceivedAt: 0, startedAt: now };
+        } else {
+          const s = streaks[chatId];
+          const timeSinceLast = now - (s.lastSentAt || 0);
+          // If within a valid cycle (< 24h + 5h grace), maintain or increment streak
+          if (timeSinceLast < STREAK_CYCLE_MS + STREAK_GRACE_MS) {
+            // Only increment if a full cycle has passed since last snap
+            if (timeSinceLast >= STREAK_CYCLE_MS) {
+              s.count = (s.count || 0) + 1;
+            }
+          } else {
+            // Streak broken — start fresh
+            s.count = 1;
+            s.startedAt = now;
+          }
+          s.lastSentAt = now;
+        }
+        saveStreaks(streaks);
+        updateStreakBadge(chatId);
+      };
+
+      // Record that a friend sent something to current user
+      window.recordStreakReceived = function(chatId) {
+        if (!chatId || chatId === 'myai') return;
+        const streaks = getStreaks();
+        if (!streaks[chatId]) {
+          streaks[chatId] = { count: 1, lastSentAt: 0, lastReceivedAt: Date.now(), startedAt: Date.now() };
+        } else {
+          streaks[chatId].lastReceivedAt = Date.now();
+        }
+        saveStreaks(streaks);
+      };
+
+      function getStreakInfo(chatId) {
+        const streaks = getStreaks();
+        const s = streaks[chatId];
+        if (!s || !s.count || s.count < 1) return null;
+        const now = Date.now();
+        const timeSinceSent = now - (s.lastSentAt || 0);
+        // Check if streak has completely expired (past 24h + 5h grace)
+        if (timeSinceSent > STREAK_CYCLE_MS + STREAK_GRACE_MS) return null;
+        // Check if in warning zone (less than 5h remaining)
+        const timeRemaining = (STREAK_CYCLE_MS + STREAK_GRACE_MS) - timeSinceSent;
+        const isWarning = timeRemaining <= STREAK_GRACE_MS && timeRemaining > 0;
+        const hoursLeft = Math.max(0, Math.floor(timeRemaining / (60 * 60 * 1000)));
+        return { count: s.count, isWarning, hoursLeft, timeRemaining };
+      }
+
+      function updateStreakBadge(chatId) {
+        const row = document.querySelector(`.friend-chat-item[data-chat="${chatId}"]`);
+        if (!row) return;
+        const nameRow = row.querySelector('.friend-name-row');
+        if (!nameRow) return;
+        // Remove old streak badge
+        const old = nameRow.querySelector('.streak-fire-tag');
+        if (old) old.remove();
+        const info = getStreakInfo(chatId);
+        if (!info || info.count < 1) return;
+        const badge = document.createElement('span');
+        badge.className = 'streak-fire-tag' + (info.isWarning ? ' streak-warning' : '');
+        badge.innerHTML = `<span class="streak-emoji">🔥</span><span class="streak-count">${info.count}</span>`;
+        if (info.isWarning) {
+          badge.title = `Streak expires in ${info.hoursLeft}h! Send a snap to keep it alive!`;
+        } else {
+          badge.title = `${info.count} day streak`;
+        }
+        nameRow.appendChild(badge);
+      }
+
+      // Update all visible streak badges
+      function refreshAllStreakBadges() {
+        document.querySelectorAll('.friend-chat-item').forEach(row => {
+          const chatId = row.dataset.chat;
+          if (chatId && chatId !== 'myai') updateStreakBadge(chatId);
+        });
+      }
+
+      // Also show streak count in profile stats
+      function updateProfileStreakDisplay() {
+        const streaks = getStreaks();
+        let totalActive = 0;
+        let longestStreak = 0;
+        Object.values(streaks).forEach(s => {
+          if (s.count > 0) {
+            const timeSinceSent = Date.now() - (s.lastSentAt || 0);
+            if (timeSinceSent <= STREAK_CYCLE_MS + STREAK_GRACE_MS) {
+              totalActive++;
+              if (s.count > longestStreak) longestStreak = s.count;
+            }
+          }
+        });
+        const scoreEl = document.getElementById('profDrawerScore');
+        if (scoreEl && totalActive > 0) {
+          const existingText = scoreEl.textContent;
+          if (!existingText.includes('streak')) {
+            scoreEl.textContent = existingText + ` · 🔥 ${totalActive} streak${totalActive > 1 ? 's' : ''}`;
+          }
+        }
+      }
+
+      // Refresh on load and periodically
+      setTimeout(refreshAllStreakBadges, 1500);
+      setTimeout(updateProfileStreakDisplay, 2000);
+      setInterval(refreshAllStreakBadges, 60000);
+
+      // Seed some demo streaks for LO's default friends
+      const streaks = getStreaks();
+      if (!streaks._seeded) {
+        const demoStreaks = {
+          _seeded: true,
+          'team_snap': { count: 42, lastSentAt: Date.now() - 3600000, lastReceivedAt: Date.now() - 7200000, startedAt: Date.now() - 42 * STREAK_CYCLE_MS },
+          'sarah_m': { count: 15, lastSentAt: Date.now() - 7200000, lastReceivedAt: Date.now() - 3600000, startedAt: Date.now() - 15 * STREAK_CYCLE_MS },
+          'emmanuel': { count: 7, lastSentAt: Date.now() - 18 * 3600000, lastReceivedAt: Date.now() - 10800000, startedAt: Date.now() - 7 * STREAK_CYCLE_MS }
+        };
+        saveStreaks({ ...streaks, ...demoStreaks });
+      }
+
+      window._refreshStreakBadges = refreshAllStreakBadges;
+    })();
+
+    // ================================================================
+    //  EDIT AVATAR PICKER
+    // ================================================================
+    (function() {
+      const AVATAR_OPTIONS = [
+        '✍️', '👻', '🧑🏽‍💻', '🧑🏾‍💼', '👩🏼', '😎',
+        '🔥', '💀', '🦊', '🐺', '🎭', '🌙',
+        '👑', '💎', '🎯', '🪐', '⚡', '🌊',
+        '🎧', '🎮', '📚', '🏀', '🎬', '🍕'
+      ];
+
+      const editBtn = document.getElementById('profEditAvatarBtn');
+      const picker = document.getElementById('profAvatarPicker');
+      const grid = document.getElementById('profAvatarGrid');
+      const customInput = document.getElementById('profAvatarCustomInput');
+      const saveBtn = document.getElementById('profAvatarSaveBtn');
+
+      if (!editBtn || !picker || !grid) return;
+
+      let selectedAvatar = null;
+
+      // Build grid
+      AVATAR_OPTIONS.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'prof-avatar-option';
+        btn.textContent = emoji;
+        btn.addEventListener('click', () => {
+          grid.querySelectorAll('.prof-avatar-option').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedAvatar = emoji;
+          if (customInput) customInput.value = '';
+        });
+        grid.appendChild(btn);
+      });
+
+      // Toggle picker visibility
+      editBtn.addEventListener('click', () => {
+        const isVisible = picker.style.display !== 'none';
+        picker.style.display = isVisible ? 'none' : 'block';
+      });
+
+      function applyAvatar(emoji) {
+        if (!emoji) return;
+        // Update current session
+        if (window.currentUserSession) window.currentUserSession.avatar = emoji;
+        // Persist
+        try {
+          const sess = JSON.parse(localStorage.getItem('snap_active_session') || '{}');
+          sess.avatar = emoji;
+          localStorage.setItem('snap_active_session', JSON.stringify(sess));
+        } catch (_) {}
+
+        // Update all avatar displays
+        if (typeof setAvatarContent === 'function') {
+          setAvatarContent(document.getElementById('profDrawerAvatar'), emoji, '👤');
+          setAvatarContent(document.getElementById('profDrawerMiniAvatar'), emoji, '👤');
+          setAvatarContent(document.getElementById('topBarAvatarIcon'), emoji, '👤');
+          setAvatarContent(document.getElementById('profPublicAvatar'), emoji, '👤');
+        } else {
+          ['profDrawerAvatar', 'profDrawerMiniAvatar', 'topBarAvatarIcon', 'profPublicAvatar'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = emoji;
+          });
+        }
+
+        picker.style.display = 'none';
+        if (typeof showSnapToast === 'function') showSnapToast(`Avatar updated to ${emoji}! Looking fresh 😎`);
+      }
+
+      // Save button handler
+      if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+          const custom = customInput && customInput.value.trim();
+          applyAvatar(custom || selectedAvatar);
+        });
+      }
+
+      // Also apply on grid click for instant feedback
+      grid.addEventListener('dblclick', (e) => {
+        const option = e.target.closest('.prof-avatar-option');
+        if (option) applyAvatar(option.textContent);
+      });
     })();
   </script>
 
