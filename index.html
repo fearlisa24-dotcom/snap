@@ -4773,11 +4773,13 @@
               return;
             }
 
-            const msgRecvId = String(msg.receiverId || '');
+            const msgRecvId = String(msg.receiverId || '').toLowerCase();
             const msgRecvUser = String(msg.receiverUsername || '').toLowerCase();
+            const msgChatId = String(msg.chatId || '').toLowerCase();
 
-            const isForMe = (msgRecvId && (msgRecvId === myId || msgRecvId === myDbId)) ||
-                            (msgRecvUser && (msgRecvUser === myHandle || msgRecvUser === myName || (myHandle && msgRecvUser.includes(myHandle)) || (myHandle && myHandle.includes(msgRecvUser))));
+            const isForMe = (msgRecvId && (msgRecvId === myId.toLowerCase() || msgRecvId === myDbId.toLowerCase() || msgRecvId === myHandle)) ||
+                            (msgRecvUser && (msgRecvUser === myHandle || msgRecvUser === myName || (myHandle && msgRecvUser.includes(myHandle)) || (myHandle && myHandle.includes(msgRecvUser)))) ||
+                            (msgChatId && (msgChatId === myHandle || msgChatId === myId.toLowerCase()));
 
             if (isForMe) {
               const senderKey = (msg.senderUsername || msg.senderId || 'friend').toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -5130,12 +5132,48 @@
             )
             .order('created_at', { ascending: true });
           if (data) {
-            return data.map(m => ({
-              type: 'text',
-              sender: m.sender_id === currentUserId ? 'me' : 'friend',
-              text: m.content,
-              time: new Date(m.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-            }));
+            return data.map(m => {
+              const isMe = m.sender_id === currentUserId;
+              const raw = m.content || '';
+              const timeStr = new Date(m.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+              if (typeof raw === 'string' && raw.startsWith('{"type":"snap"')) {
+                try {
+                  const snapObj = JSON.parse(raw);
+                  return {
+                    id: snapObj.snapId || m.id,
+                    type: 'snap',
+                    sender: isMe ? 'me' : 'friend',
+                    status: isMe ? 'delivered' : (snapObj.status || 'unread'),
+                    title: snapObj.title || 'Camera Snap 📸',
+                    content: snapObj.content || 'Photo snapped from camera!',
+                    image: snapObj.image || null,
+                    time: timeStr,
+                    sentAt: snapObj.sentAt || new Date(m.created_at).getTime(),
+                    expiresAt: snapObj.expiresAt || (new Date(m.created_at).getTime() + (12 * 60 * 60 * 1000))
+                  };
+                } catch (_) {}
+              } else if (typeof raw === 'string' && raw.startsWith('{"type":"voicenote"')) {
+                try {
+                  const vnObj = JSON.parse(raw);
+                  return {
+                    id: m.id,
+                    type: 'voicenote',
+                    sender: isMe ? 'me' : 'friend',
+                    audio: vnObj.audio || null,
+                    duration: vnObj.duration || '0:03',
+                    time: timeStr,
+                    sentAt: new Date(m.created_at).getTime()
+                  };
+                } catch (_) {}
+              }
+              return {
+                id: m.id,
+                type: 'text',
+                sender: isMe ? 'me' : 'friend',
+                text: raw,
+                time: timeStr
+              };
+            });
           }
         } catch (err) {}
       }
@@ -7003,6 +7041,7 @@
             event: 'direct_message',
             payload: {
               ...snapPayload,
+              chatId: chatId,
               senderId: currentUserSession?.id,
               senderUsername: currentUserSession?.username,
               receiverId: friendUserId || friendHandle,
@@ -7105,10 +7144,52 @@
           if (dbMsgs && dbMsgs.length > 0) {
             conversations[chatId] = dbMsgs.map(m => {
               const isMe = (m.sender === 'me' || (currentUserSession?.id && m.sender_id === currentUserSession.id));
-              const d = new Date(m.created_at || Date.now());
+              const d = new Date(m.created_at || m.sentAt || Date.now());
               const timeStr = m.time || d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-              const rawContent = m.content || m.text || '';
 
+              // 1. If already structured object from backend
+              if (m.type === 'snap') {
+                return {
+                  type: 'snap',
+                  sender: isMe ? 'me' : 'friend',
+                  status: isMe ? 'delivered' : (m.status || 'unread'),
+                  id: m.id || m.snapId || `snap-${Date.now()}`,
+                  title: m.title || 'Camera Snap 📸',
+                  content: m.content || 'Photo snapped from web camera view!',
+                  image: m.image || null,
+                  time: timeStr,
+                  sentAt: m.sentAt || d.getTime(),
+                  expiresAt: m.expiresAt || (d.getTime() + (12 * 60 * 60 * 1000)),
+                  replyTo: m.replyTo || null
+                };
+              }
+              if (m.type === 'voicenote') {
+                return {
+                  type: 'voicenote',
+                  sender: isMe ? 'me' : 'friend',
+                  status: isMe ? 'delivered' : (m.status || 'unread'),
+                  audio: m.audio || null,
+                  duration: m.duration || '0:03',
+                  time: timeStr,
+                  sentAt: m.sentAt || d.getTime(),
+                  replyTo: m.replyTo || null
+                };
+              }
+              if (m.type === 'image') {
+                return {
+                  type: 'image',
+                  sender: isMe ? 'me' : 'friend',
+                  status: isMe ? 'delivered' : 'unread',
+                  image: m.image || null,
+                  text: m.text || 'Photo',
+                  time: timeStr,
+                  sentAt: d.getTime(),
+                  replyTo: m.replyTo || null
+                };
+              }
+
+              // 2. Parse raw JSON if stored as content string
+              const rawContent = m.content || m.text || '';
               if (typeof rawContent === 'string' && rawContent.startsWith('{"type":"snap"')) {
                 try {
                   const snapData = JSON.parse(rawContent);
@@ -7124,9 +7205,21 @@
                     sentAt: snapData.sentAt || d.getTime(),
                     expiresAt: snapData.expiresAt || (d.getTime() + (12 * 60 * 60 * 1000))
                   };
-                } catch (parseErr) {
-                  console.warn('Could not parse snap message content:', parseErr);
-                }
+                } catch (parseErr) {}
+              } else if (typeof rawContent === 'string' && rawContent.startsWith('{"type":"voicenote"')) {
+                try {
+                  const vnData = JSON.parse(rawContent);
+                  return {
+                    type: 'voicenote',
+                    sender: isMe ? 'me' : 'friend',
+                    status: isMe ? 'delivered' : 'unread',
+                    audio: vnData.audio || null,
+                    duration: vnData.duration || '0:03',
+                    time: timeStr,
+                    sentAt: d.getTime(),
+                    replyTo: vnData.replyTo || null
+                  };
+                } catch (parseVnErr) {}
               } else if (typeof rawContent === 'string' && rawContent.startsWith('{"type":"image"')) {
                 try {
                   const imgData = JSON.parse(rawContent);
@@ -7139,9 +7232,7 @@
                     time: timeStr,
                     sentAt: d.getTime()
                   };
-                } catch (parseImgErr) {
-                  console.warn('Could not parse image message content:', parseImgErr);
-                }
+                } catch (parseImgErr) {}
               }
 
               return {
@@ -7234,7 +7325,16 @@
         existingRow.className = 'friend-chat-item';
         existingRow.dataset.chat = chatId;
         existingRow.dataset.handle = (userData.handle || userData.username || chatId).toLowerCase();
-        if (userData.id) existingRow.dataset.userId = userData.id;
+        if (userData.id) {
+          existingRow.dataset.userId = userData.id;
+        } else {
+          const matchU = (realSupabaseUsersList || []).find(u =>
+            (u.username && u.username.toLowerCase() === chatId) ||
+            (u.email && u.email.toLowerCase().startsWith(chatId + '@')) ||
+            (u.fullName && u.fullName.toLowerCase() === (userData.name || '').toLowerCase())
+          );
+          if (matchU) existingRow.dataset.userId = matchU.id;
+        }
         existingRow.dataset.header = (userData.name || chatId).toUpperCase();
         existingRow.dataset.name = userData.name || chatId;
         existingRow.dataset.initial = userData.avatar || '👤';
@@ -7860,6 +7960,7 @@
               event: 'direct_message',
               payload: {
                 type: 'voicenote',
+                chatId: chatId,
                 duration: finalDuration,
                 audio: audioUrl,
                 senderId: currentUserSession?.id,
