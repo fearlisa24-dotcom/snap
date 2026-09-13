@@ -6590,7 +6590,24 @@
       const friendUserId = row.dataset.userId;
 
       if (activeChatName) activeChatName.textContent = name;
-      if (activeChatStatus) activeChatStatus.textContent = status;
+      if (activeChatStatus) {
+        if (chatId === 'myai') {
+          activeChatStatus.innerHTML = `<span>OpenAI GPT-4o</span> · <span id="myAiKeyBtn" style="color:#0084FF; cursor:pointer; font-weight:700; text-decoration:underline;">🔑 API Key</span>`;
+          const keyBtn = document.getElementById('myAiKeyBtn');
+          if (keyBtn) {
+              const defaultKey = atob('c2stcHJvai1zVjJaMUd0cFMzRDBZN2VGeGtNMUg0RWd1TXo1LTV4MVhkdWtzS1Ffd1RZZnJzTmlPa0dwYlBMcW8yVG9xVFpqeE1McjNiWER3MFQzQmxia0ZKNnhfeXl2RGVaSE54M0wwLVJuWUV3NDFfVjJ4OHE0bEJ6SFlZSzViM0kxcTUzdE5pU0VrckZiU1V0TERHelRDMDlHQzcwbzF4b0E=');
+              const existing = localStorage.getItem('snap_openai_key') || defaultKey;
+              const inputKey = prompt('Enter your active OpenAI API Key (sk-...):', existing);
+              if (inputKey && inputKey.trim().length > 10) {
+                localStorage.setItem('snap_openai_key', inputKey.trim());
+                showSnapToast('✅ OpenAI API key saved and activated!');
+              }
+            });
+          }
+        } else {
+          activeChatStatus.textContent = status;
+        }
+      }
       if (activeChatAvatar) {
         activeChatAvatar.textContent = initial;
         activeChatAvatar.style.background = color;
@@ -6978,72 +6995,68 @@
         // Call OpenAI directly and via /api/myai endpoint
         (async () => {
           let replyText = '';
-          const OPENAI_KEY = localStorage.getItem('snap_openai_key') || atob('c2stcHJvai1zVjJaMUd0cFMzRDBZN2VGeGtNMUg0RWd1TXo1LTV4MVhkdWtzS1Ffd1RZZnJzTmlPa0dwYlBMcW8yVG9xVFpqeE1McjNiWER3MFQzQmxia0ZKNnhfeXl2RGVaSE54M0wwLVJuWUV3NDFfVjJ4OHE0bEJ6SFlZSzViM0kxcTUzdE5pU0VrckZiU1V0TERHelRDMDlHQzcwbzF4b0E=');
+          const DEFAULT_KEY = atob('c2stcHJvai1zVjJaMUd0cFMzRDBZN2VGeGtNMUg0RWd1TXo1LTV4MVhkdWtzS1Ffd1RZZnJzTmlPa0dwYlBMcW8yVG9xVFpqeE1McjNiWER3MFQzQmxia0ZKNnhfeXl2RGVaSE54M0wwLVJuWUV3NDFfVjJ4OHE0bEJ6SFlZSzViM0kxcTUzdE5pU0VrckZiU1V0TERHelRDMDlHQzcwbzF4b0E=');
+          const OPENAI_KEY = (localStorage.getItem('snap_openai_key') || '').trim() || DEFAULT_KEY;
 
+          // 1. Try serverless backend endpoint
           try {
-            // 1. Try backend serverless endpoint
             const res = await fetch('/api/myai', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 message: text,
-                history: conversations['myai'] || []
+                history: conversations['myai'] || [],
+                apiKey: OPENAI_KEY
               })
             });
             if (res.ok) {
               const data = await res.json();
-              if (data.reply) replyText = data.reply;
+              if (data && data.reply) {
+                replyText = data.reply;
+              }
             }
           } catch (_) {}
 
-          // 2. Direct client fallback to OpenAI if backend endpoint is unavailable
+          // 2. Direct client call to OpenAI API (with explicit Authorization header)
           if (!replyText) {
             try {
               const openAiRes = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${OPENAI_KEY}`
+                  'Authorization': 'Bearer ' + OPENAI_KEY
                 },
                 body: JSON.stringify({
                   model: 'gpt-4o-mini',
                   messages: [
                     {
                       role: 'system',
-                      content: "You are My AI, Snapchat's official companion and friendly virtual best friend. Keep replies short (1-3 sentences), lively, supportive, casual, and use emojis naturally ✨👻"
+                      content: "You are My AI, Snapchat's official companion and virtual friend. Keep responses short (1 to 3 sentences), lively, friendly, and use emojis naturally ✨👻"
                     },
                     { role: 'user', content: text }
                   ],
-                  max_tokens: 140
+                  max_tokens: 150,
+                  temperature: 0.8
                 })
               });
-              if (openAiRes.ok) {
-                const oaiData = await openAiRes.json();
-                replyText = oaiData?.choices?.[0]?.message?.content?.trim();
+
+              const oaiData = await openAiRes.json().catch(() => null);
+
+              if (openAiRes.ok && oaiData?.choices?.[0]?.message?.content) {
+                replyText = oaiData.choices[0].message.content.trim();
+              } else if (oaiData?.error?.message) {
+                // Surface exact OpenAI API error
+                console.warn('OpenAI API Error details:', oaiData.error);
+                replyText = `🤖 [OpenAI: ${oaiData.error.message}]`;
               }
-            } catch (_) {}
+            } catch (netErr) {
+              console.warn('OpenAI network fetch error:', netErr);
+            }
           }
 
-          // 3. Contextual companion fallback if credits / quota are exhausted
+          // 3. Fallback only if no response could be retrieved at all
           if (!replyText) {
-            const p = text.toLowerCase();
-            if (p.includes('story') || p.includes('novel') || p.includes('write') || p.includes('chapter')) {
-              replyText = "Ooh, writing a new story? I love a good page-turner! What's the main twist in this chapter? ✍️✨";
-            } else if (p.includes('photo') || p.includes('picture') || p.includes('snap')) {
-              replyText = "That snap is fire! 📸 Loving the aesthetic today.";
-            } else if (p.includes('voice') || p.includes('audio') || p.includes('hear')) {
-              replyText = "I hear you loud and clear! 🎤 Always love hearing your voice.";
-            } else if (p.includes('hey') || p.includes('hello') || p.includes('hi') || p.includes('yo')) {
-              replyText = "Hey there! 👋 What's going on today? Tell me everything!";
-            } else {
-              const fallbacks = [
-                "I'm right here with you! Need me to suggest any ideas or brainstorm notes? ✨",
-                "That's awesome! Tell me more about what you're thinking 💬",
-                "Got it! I'm right here whenever you need anything on Snapchat 🤖✨",
-                "Totally agree with you on that! What's the next move? 🔥"
-              ];
-              replyText = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-            }
+            replyText = "I'm right here with you! Need me to suggest any ideas or brainstorm notes? ✨";
           }
 
           hideTypingIndicator();
