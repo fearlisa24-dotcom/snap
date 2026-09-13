@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Snapchat Web</title>
+  <title>SnapTok</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -131,7 +131,7 @@
     }
 
     /* ========================================================= */
-    /* LEFT COLUMN: AUTHENTIC SNAPCHAT WEB SIDEBAR               */
+    /* LEFT COLUMN: AUTHENTIC SNAPTOK WEB SIDEBAR               */
     /* ========================================================= */
     .left-column {
       background-color: #FFFFFF;
@@ -565,7 +565,7 @@
       transform: scale(0.97);
     }
 
-    /* Snapchat Bitmoji Studio Customizer Full Overlay */
+    /* SnapTok Bitmoji Studio Customizer Full Overlay */
     .prof-avatar-picker.bitmoji-studio {
       position: absolute;
       top: 0;
@@ -1688,7 +1688,7 @@
 
     .shutter-ring:hover .shutter-core { background: var(--snap-yellow); }
 
-    /* View B: Dedicated Snapchat Web Chat View */
+    /* View B: Dedicated SnapTok Web Chat View */
     .chat-stage {
       flex: 1;
       display: flex;
@@ -2076,7 +2076,7 @@
       gap: 4px;
     }
 
-    /* Snapchat Floating Typing Indicator (3 Bouncing Dots) */
+    /* SnapTok Floating Typing Indicator (3 Bouncing Dots) */
     .snap-typing-container {
       display: none;
       align-items: center;
@@ -3217,7 +3217,7 @@
     }
 
     /* ========================================================= */
-    /* USER PROFILE DRAWER (iPad / laptop Snapchat-style menu)   */
+    /* USER PROFILE DRAWER (iPad / laptop SnapTok-style menu)   */
     /* ========================================================= */
     .snap-profile-overlay {
       position: fixed;
@@ -4073,12 +4073,12 @@
 <body>
 
   <!-- ======================================================= -->
-  <!-- SNAPCHAT AUTHENTICATION OVERLAY (SIGN IN / CREATE ACC)  -->
+  <!-- SNAPTOK AUTHENTICATION OVERLAY (SIGN IN / CREATE ACC)  -->
   <!-- ======================================================= -->
   <div class="snap-auth-overlay" id="snapAuthOverlay">
     <div class="snap-auth-card">
       <!-- Direct 1-Click Skip / Close Button -->
-      <button type="button" onclick="window.dismissAuthOverlay({id:'guest',username:'guest_snap',fullName:'Guest User',avatar:'👻',score:'1,200',campus:'Snapchat Explorer'}, 'Welcome to Snapchat! 👻')" title="Skip & Enter" style="position:absolute; top:18px; right:20px; background:#F3F4F6; border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:bold; cursor:pointer; color:#71717A; z-index:10;">✕</button>
+      <button type="button" onclick="window.dismissAuthOverlay({id:'guest',username:'guest_snap',fullName:'Guest User',avatar:'👻',score:'1,200',campus:'SnapTok Explorer'}, 'Welcome to SnapTok! 👻')" title="Skip & Enter" style="position:absolute; top:18px; right:20px; background:#F3F4F6; border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:bold; cursor:pointer; color:#71717A; z-index:10;">✕</button>
 
       <div class="auth-snap-ghost">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#18181C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -4086,7 +4086,7 @@
         </svg>
       </div>
 
-      <h2 class="auth-title" id="authHeading">Log In to Snapchat</h2>
+      <h2 class="auth-title" id="authHeading">Log In to SnapTok</h2>
       <p class="auth-subtitle" id="authSubheading">Enter your username or email and password to access your web chats.</p>
 
       <div class="auth-tabs-pill">
@@ -4115,7 +4115,7 @@
 
         <button class="auth-submit-btn" id="authSubmitBtn" type="button" onclick="window.handleAuthSubmit()">Log In</button>
 
-        <button type="button" class="auth-submit-btn" id="authGuestBtn" onclick="window.dismissAuthOverlay({id:'guest',username:'guest_snap',fullName:'Guest User',avatar:'👻',score:'1,200',campus:'Snapchat Explorer'}, 'Signed in as Guest! Welcome to Snapchat 👻')" style="background:#F3F4F6; color:#18181C; box-shadow:none; margin-top:2px; border:1.5px solid #E5E7EB;">
+        <button type="button" class="auth-submit-btn" id="authGuestBtn" onclick="window.dismissAuthOverlay({id:'guest',username:'guest_snap',fullName:'Guest User',avatar:'👻',score:'1,200',campus:'SnapTok Explorer'}, 'Signed in as Guest! Welcome to SnapTok 👻')" style="background:#F3F4F6; color:#18181C; box-shadow:none; margin-top:2px; border:1.5px solid #E5E7EB;">
           ⚡ Continue as Guest (1-Click)
         </button>
       </form>
@@ -4197,7 +4197,7 @@
             <div class="prof-plus-icon">👻</div>
             <div class="prof-card-copy">
               <div class="prof-card-title-row">
-                <span class="prof-card-title">Snapchat+</span>
+                <span class="prof-card-title">SnapTok+</span>
                 <span class="prof-new-tag">New features</span>
               </div>
               <div class="prof-card-sub">Exclusive, experimental and pre-release features.</div>
@@ -4208,7 +4208,7 @@
           <div class="prof-card" id="profFindFriendsCard" style="display:flex; align-items:center; gap:12px;">
             <div class="prof-plus-icon">📇</div>
             <div class="prof-card-copy">
-              <div class="prof-card-title">Find friends on Snapchat</div>
+              <div class="prof-card-title">Find friends on SnapTok</div>
               <div class="prof-card-sub">Tap to sync your contacts</div>
             </div>
             <button type="button" class="prof-icon-btn" id="dismissFindFriendsBtn" title="Dismiss" style="width:28px;height:28px;background:transparent;color:#A1A1AA;flex-shrink:0;">✕</button>
@@ -4223,7 +4223,7 @@
               <div class="prof-row-icon">▶</div>
               <div class="prof-row-copy">
                 <div class="prof-row-title">Spotlight</div>
-                <div class="prof-row-sub">Reach millions of Snapchatters!</div>
+                <div class="prof-row-sub">Reach millions of SnapTokers!</div>
               </div>
               <span class="prof-card-chevron">›</span>
             </button>
@@ -4294,18 +4294,18 @@
             <div class="prof-mini-pfp" id="profPublicAvatar" style="width:72px;height:72px;font-size:34px;margin:0 auto 12px;">👤</div>
             <div class="prof-display-name" id="profPublicName" style="justify-content:center;color:#FAFAFA;">Display name</div>
             <div class="prof-public-handle" id="profPublicHandle">@username</div>
-            <p class="prof-public-bio" id="profPublicBio">This is how people see you on Snapchat. Your public profile shows your display name, username, and Bitmoji.</p>
+            <p class="prof-public-bio" id="profPublicBio">This is how people see you on SnapTok. Your public profile shows your display name, username, and Bitmoji.</p>
           </div>
         </div>
       </div>
 
-      <!-- Snapchat Bitmoji Studio Customizer Full Overlay -->
+      <!-- SnapTok Bitmoji Studio Customizer Full Overlay -->
       <div class="prof-avatar-picker bitmoji-studio" id="profAvatarPicker" style="display:none;">
         <div class="bm-studio-header">
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:20px;">🎨</span>
             <div>
-              <div class="bm-studio-title">Snapchat Bitmoji Studio</div>
+              <div class="bm-studio-title">SnapTok Bitmoji Studio</div>
               <div style="font-size:11px; color:#71717A; font-weight:500;">Customize skin, hair, vibes & outfit</div>
             </div>
           </div>
@@ -4418,8 +4418,8 @@
           <div class="prof-list-row" style="cursor:default;">
             <div class="prof-row-icon" style="background:#EFF6FF; color:#0284C7;">🤝</div>
             <div class="prof-row-copy">
-              <div class="prof-row-title">Snapchat Friend</div>
-              <div class="prof-row-sub" id="fpFriendshipSub">Connected on Snapchat Web</div>
+              <div class="prof-row-title">SnapTok Friend</div>
+              <div class="prof-row-sub" id="fpFriendshipSub">Connected on SnapTok</div>
             </div>
           </div>
           <div class="prof-list-row" style="cursor:default;">
@@ -4467,7 +4467,7 @@
   <div class="app-shell">
 
     <!-- ======================================================= -->
-    <!-- LEFT COLUMN: AUTHENTIC SNAPCHAT WEB SIDEBAR             -->
+    <!-- LEFT COLUMN: AUTHENTIC SNAPTOK WEB SIDEBAR             -->
     <!-- ======================================================= -->
     <aside class="left-column">
       <!-- Top Bar -->
@@ -4477,7 +4477,7 @@
           <div class="avatar-gear-badge">⚙</div>
         </button>
 
-        <div class="snap-logo-center" id="snapGhostHomeBtn" title="Snapchat">
+        <div class="snap-logo-center" id="snapGhostHomeBtn" title="SnapTok">
           <svg class="snap-ghost-icon" viewBox="0 0 24 24" fill="none" stroke="#18181C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2C8 2 5.5 5 5.5 9c0 2-.5 3-1.5 4-.5.5-.5 1.5 0 2 1 .5 2 1 2.5 1s1 .5 1 1c0 1 1 2 2 2s1.5-.5 2.5-.5 2 .5 2.5.5 2-1 2-2c0-.5.5-1 1-1s1.5-.5 2.5-1c.5-.5.5-1.5 0-2-1-1-1.5-2-1.5-4 0-4-2.5-7-6.5-7z"/>
           </svg>
@@ -4676,7 +4676,7 @@
         </button>
       </div>
 
-      <!-- View B: Dedicated Snapchat Web Chat View -->
+      <!-- View B: Dedicated SnapTok Web Chat View -->
       <div class="chat-stage" id="chatStage" style="display: none;">
         <div class="chat-bg-pattern"></div>
 
@@ -4698,7 +4698,7 @@
 
         <div class="message-stream" id="messageStream"></div>
 
-        <!-- Snapchat Floating Typing Indicator (3 Bouncing Dots) -->
+        <!-- SnapTok Floating Typing Indicator (3 Bouncing Dots) -->
         <div class="snap-typing-container" id="snapTypingIndicator">
           <div class="snap-typing-avatar-circle" id="snapTypingAvatar">👤</div>
           <div class="snap-typing-pill">
@@ -4843,7 +4843,7 @@
               <span style="font-size: 20px; flex-shrink: 0;">🔒</span>
               <div style="min-width: 0;">
                 <div style="font-size: 13.5px; font-weight: 700; color: #18181C;" id="chatLockedTitle">Chat Locked</div>
-                <div style="font-size: 12px; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="chatLockedSubtitle">You must be accepted friends on Snapchat to message.</div>
+                <div style="font-size: 12px; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="chatLockedSubtitle">You must be accepted friends on SnapTok to message.</div>
               </div>
             </div>
             <div id="chatLockedActionContainer" style="flex-shrink: 0;"></div>
@@ -6513,7 +6513,7 @@
         {
           type: 'text',
           sender: 'friend',
-          text: "Hey! I'm My AI, your Snapchat companion. Ask me questions or send me snaps!",
+          text: "Hey! I'm My AI, your SnapTok companion. Ask me questions or send me snaps!",
           time: '4:21 PM'
         }
       ]
@@ -7155,7 +7155,7 @@
               // Strip out any fake welcome / auto-generated messages
               const clean = parsed[k].filter(m => {
                 if (!m || !m.text) return true;
-                if (m.text.includes("friends on Snapchat now") || m.text.includes("via the Account Directory") || m.text.includes("Say hi!")) return false;
+                if ((m.text.includes("friends on SnapTok now") || m.text.includes("friends on Snapchat now")) || m.text.includes("via the Account Directory") || m.text.includes("Say hi!")) return false;
                 return true;
               });
               conversations[k] = clean;
@@ -7296,7 +7296,7 @@
           <span>⏱️</span>
           <div>
             <div><b>Snap Disappeared</b></div>
-            <div style="font-size:11px; color:#9CA3AF; margin-top:2px;">Automatically deleted after 12 hours (Snapchat privacy).</div>
+            <div style="font-size:11px; color:#9CA3AF; margin-top:2px;">Automatically deleted after 12 hours (SnapTok privacy).</div>
           </div>
         `;
         return card;
@@ -7757,7 +7757,7 @@
           } else if (chatId !== 'myai') {
             conversations[chatId] = (conversations[chatId] || []).filter(m => {
               if (!m || !m.text) return false;
-              if (m.text.includes("friends on Snapchat now") || m.text.includes("via the Account Directory") || m.text.includes("Say hi!")) return false;
+              if ((m.text.includes("friends on SnapTok now") || m.text.includes("friends on Snapchat now")) || m.text.includes("via the Account Directory") || m.text.includes("Say hi!")) return false;
               return true;
             });
           }
@@ -7859,7 +7859,7 @@
       friendProfShareBtn.addEventListener('click', async () => {
         if (!currentFriendModalRow) return;
         const handle = currentFriendModalRow.dataset.handle || currentFriendModalRow.dataset.chat || 'friend';
-        const shareText = `Add @${handle} on Snapchat Web!`;
+        const shareText = `Add @${handle} on SnapTok!`;
         try {
           if (navigator.clipboard) await navigator.clipboard.writeText(shareText);
         } catch (_) {}
@@ -8101,7 +8101,7 @@
       } else {
         conversations[chatId] = conversations[chatId].filter(m => {
           if (!m || !m.text) return false;
-          if (m.text.includes("friends on Snapchat now") || m.text.includes("via the Account Directory") || m.text.includes("Say hi!")) return false;
+          if ((m.text.includes("friends on SnapTok now") || m.text.includes("friends on Snapchat now")) || m.text.includes("via the Account Directory") || m.text.includes("Say hi!")) return false;
           return true;
         });
       }
@@ -8137,7 +8137,7 @@
     const chatInput = document.getElementById('chatInputField');
     const sendBtn = document.getElementById('sendChatBtn');
 
-    // --- Snapchat Real-Time Typing Indicator System ---
+    // --- SnapTok Real-Time Typing Indicator System ---
     const snapTypingIndicator = document.getElementById('snapTypingIndicator');
     const snapTypingAvatar = document.getElementById('snapTypingAvatar');
     let typingDebounceTimeout = null;
@@ -8367,7 +8367,7 @@
                   messages: [
                     {
                       role: 'system',
-                      content: "You are My AI, Snapchat's official companion and virtual friend. Keep responses short (1 to 3 sentences), lively, friendly, and use emojis naturally ✨👻"
+                      content: "You are My AI, SnapTok's official companion and virtual friend. Keep responses short (1 to 3 sentences), lively, friendly, and use emojis naturally ✨👻"
                     },
                     { role: 'user', content: text }
                   ],
@@ -8988,7 +8988,7 @@
           const senderUser = users.find(u => u.id === req.sender_id || (u.username && u.username.toLowerCase() === req.sender_id.toLowerCase())) || {
             id: req.sender_id,
             username: 'friend',
-            fullName: 'Snapchat Friend',
+            fullName: 'SnapTok Friend',
             avatar: '👤',
             campus: 'Pending Friend Request'
           };
@@ -9475,7 +9475,7 @@
       if (mode === 'signin') {
         if (tabSignInBtn) tabSignInBtn.classList.add('active');
         if (tabSignUpBtn) tabSignUpBtn.classList.remove('active');
-        if (authHeading) authHeading.textContent = 'Log In to Snapchat';
+        if (authHeading) authHeading.textContent = 'Log In to SnapTok';
         if (authSubheading) authSubheading.textContent = 'Enter your username or email and password to access your web chats.';
         if (signupFullNameGroup) signupFullNameGroup.style.display = 'none';
         if (authUsernameLabel) authUsernameLabel.textContent = 'Username or Email';
@@ -9565,10 +9565,10 @@
           fullName: 'Guest User',
           avatar: '👻',
           score: '1,200',
-          campus: 'Snapchat Explorer',
+          campus: 'SnapTok Explorer',
           friendsCount: 6
         };
-        window.dismissAuthOverlay(guestUser, 'Signed in as Guest! Welcome to Snapchat 👻');
+        window.dismissAuthOverlay(guestUser, 'Signed in as Guest! Welcome to SnapTok 👻');
       });
     }
 
@@ -9690,7 +9690,7 @@
           if (helperEl) helperEl.textContent = '';
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
           isAuthProcessing = false;
-          window.dismissAuthOverlay(newUser, `Welcome to Snapchat, ${newUser.fullName}! 🎉`);
+          window.dismissAuthOverlay(newUser, `Welcome to SnapTok, ${newUser.fullName}! 🎉`);
           return;
         }
       } catch (clientErr) {
@@ -9738,11 +9738,11 @@
 
     function updateAppUserUI(user) {
       if (!user) return;
-      const displayName = user.fullName || user.name || user.username || 'Snapchatter';
+      const displayName = user.fullName || user.name || user.username || 'SnapToker';
       const username = user.username || user.handle || 'user';
       const avatar = user.avatar || '👤';
       const score = user.score || user.snapScore || '0';
-      const campus = user.campus || user.zodiac || 'Snapchat';
+      const campus = user.campus || user.zodiac || 'SnapTok';
       const friendsCount = user.friendsCount != null ? user.friendsCount : countSidebarFriends();
 
       setAvatarContent(document.getElementById('topBarAvatarIcon'), avatar, '👤');
@@ -9768,7 +9768,7 @@
       if (publicHandle) publicHandle.textContent = '@' + username;
       const publicBio = document.getElementById('profPublicBio');
       if (publicBio) {
-        publicBio.textContent = user.bio || ('This is how people see @' + username + ' on Snapchat. Display name, username, and Bitmoji are public.');
+        publicBio.textContent = user.bio || ('This is how people see @' + username + ' on SnapTok. Display name, username, and Bitmoji are public.');
       }
     }
 
@@ -9846,7 +9846,7 @@
     if (profShareBtn) {
       profShareBtn.addEventListener('click', async () => {
         const handle = currentUserSession?.username || 'user';
-        const shareText = 'Add me on Snapchat: @' + handle;
+        const shareText = 'Add me on SnapTok: @' + handle;
         try {
           if (navigator.clipboard) await navigator.clipboard.writeText(shareText);
         } catch (err) {}
@@ -9872,7 +9872,7 @@
     const profSnapPlusCard = document.getElementById('profSnapPlusCard');
     if (profSnapPlusCard) {
       profSnapPlusCard.addEventListener('click', () => {
-        showSnapToast('Snapchat+ experimental features coming soon');
+        showSnapToast('SnapTok+ experimental features coming soon');
       });
     }
 
@@ -10014,7 +10014,7 @@
           return;
         }
 
-        const user = currentUserSession || { id: 'guest', username: 'guest', fullName: 'Snapchat User', avatar: '👻' };
+        const user = currentUserSession || { id: 'guest', username: 'guest', fullName: 'SnapTok User', avatar: '👻' };
         const caption = suCaptionInput ? suCaptionInput.value.trim() : '';
         const now = Date.now();
         const createdAt = new Date(now).toISOString();
@@ -10109,7 +10109,7 @@
     function openStoryViewer(story) {
       if (!story) return;
       if (svAuthorAv) svAuthorAv.textContent = story.avatar || '👤';
-      if (svAuthorName) svAuthorName.textContent = story.fullName || story.username || 'Snapchat Friend';
+      if (svAuthorName) svAuthorName.textContent = story.fullName || story.username || 'SnapTok Friend';
       if (svStoryTime) svStoryTime.textContent = formatStoryTimeAgo(story.created_at || story.createdAt);
 
       if (story.media_type === 'video' || (story.media_url && story.media_url.startsWith('data:video'))) {
@@ -10249,7 +10249,7 @@
                   <div class="sv-viewer-row">
                     <div class="sv-viewer-av">${escapeHtml(v.avatar || '👤')}</div>
                     <div class="sv-viewer-info">
-                      <div class="sv-viewer-name">${escapeHtml(v.full_name || v.fullName || v.username || 'Snapchatter')}</div>
+                      <div class="sv-viewer-name">${escapeHtml(v.full_name || v.fullName || v.username || 'SnapToker')}</div>
                       <div class="sv-viewer-time">${formatStoryTimeAgo(v.viewed_at)}</div>
                     </div>
                   </div>
@@ -10411,7 +10411,7 @@
         setAuthMode('signin');
         if (authUsernameInput) authUsernameInput.value = '';
         if (authPasswordInput) authPasswordInput.value = '';
-        showSnapToast("Logged out of Snapchat.");
+        showSnapToast("Logged out of SnapTok.");
       });
     }
 
@@ -11077,7 +11077,7 @@
     // ================================================================
     //  EDIT AVATAR PICKER
     // ================================================================
-    //  SNAPCHAT BITMOJI STUDIO ENGINE (Skin Tones, Hair Colors, Outfits)
+    //  SNAPTOK BITMOJI STUDIO ENGINE (Skin Tones, Hair Colors, Outfits)
     // ================================================================
     (function() {
       const editBtn = document.getElementById('profEditAvatarBtn');
@@ -11206,7 +11206,7 @@
           `;
         } else if (vibe === 'hoodie') {
           outfitSvg = `
-            <!-- Snapchat Yellow Hoodie -->
+            <!-- SnapTok Yellow Hoodie -->
             <path d="M20,84 C30,70 70,70 80,84 C70,96 30,96 20,84 Z" fill="#FFFC00"/>
             <circle cx="50" cy="74" r="14" fill="none" stroke="#CA8A04" stroke-width="2.5"/>
           `;

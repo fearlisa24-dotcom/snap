@@ -17,7 +17,7 @@ let MESSAGES_DB = {
     {
       type: 'text',
       sender: 'friend',
-      text: "Hey! I'm My AI, your Snapchat personal companion. Ask me anything or send me snaps!",
+      text: "Hey! I'm My AI, your SnapTok personal companion. Ask me anything or send me snaps!",
       time: '4:21 PM'
     }
   ]

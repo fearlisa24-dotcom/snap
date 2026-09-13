@@ -1,7 +1,7 @@
 {
-  "name": "snapchat-web-app",
+  "name": "snaptok-web-app",
   "version": "1.0.0",
-  "description": "Full-stack Snapchat Web application with backend authentication, account directory, and 12-hour disappearing media messages.",
+  "description": "Full-stack SnapTok Web application with backend authentication, account directory, and 12-hour disappearing media messages.",
   "main": "index.html",
   "scripts": {
     "start": "serve .",

@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
         fullName: u.user_metadata?.full_name || u.user_metadata?.username || u.email.split("@")[0],
         avatar: u.user_metadata?.avatar || "👤",
         score: u.user_metadata?.score || "500",
-        campus: u.user_metadata?.campus || "Snapchat Member",
+        campus: u.user_metadata?.campus || "SnapTok Member",
         friends: u.user_metadata?.friends || []
       }));
       return res.status(200).json({ success: true, source: "supabase", users: realUsers });
@@ -143,7 +143,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         success: true,
         source: "supabase",
-        message: "Welcome to Snapchat, " + fullName + "! Real Supabase account created. 🎉",
+        message: "Welcome to SnapTok, " + fullName + "! Real Supabase account created. 🎉",
         token: "sb_token_" + newUser.id,
         user: {
           id: newUser.id,
