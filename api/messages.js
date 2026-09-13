@@ -149,7 +149,7 @@ module.exports = async (req, res) => {
     const nowTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
     // Also persist directly into Supabase messages table if human IDs provided
-    if (body.senderId && body.receiverId && body.text) {
+    if (body.senderId && body.receiverId && (body.text || body.content)) {
       try {
         const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
         let finalSenderId = body.senderId;
@@ -178,11 +178,38 @@ module.exports = async (req, res) => {
           }
         }
 
+        // Action: Mark Snap Opened in Database
+        if (body.action === 'mark_opened' && body.snapId) {
+          // Find message matching snapId and update its status
+          const { data: matchingMsgs } = await supabaseAdmin
+            .from('messages')
+            .select('id, content')
+            .or(`and(sender_id.eq.${finalSenderId},receiver_id.eq.${finalReceiverId}),and(sender_id.eq.${finalReceiverId},receiver_id.eq.${finalSenderId})`)
+            .ilike('content', `%"${body.snapId}"%`);
+
+          if (matchingMsgs && matchingMsgs.length > 0) {
+            for (const row of matchingMsgs) {
+              try {
+                const parsed = JSON.parse(row.content);
+                parsed.status = 'opened';
+                parsed.openedAt = Date.now();
+                await supabaseAdmin
+                  .from('messages')
+                  .update({ content: JSON.stringify(parsed) })
+                  .eq('id', row.id);
+              } catch (_) {}
+            }
+            return res.status(200).json({ success: true, message: 'Snap marked opened' });
+          }
+          return res.status(200).json({ success: true });
+        }
+
         if (isUUID(finalSenderId) && isUUID(finalReceiverId)) {
+          const contentToSave = typeof body.text === 'string' ? body.text : JSON.stringify(body.text || body.content);
           await supabaseAdmin.from('messages').insert({
             sender_id: finalSenderId,
             receiver_id: finalReceiverId,
-            content: body.text,
+            content: contentToSave,
             created_at: new Date().toISOString()
           });
         }
@@ -196,27 +223,34 @@ module.exports = async (req, res) => {
       newMsg = {
         type: 'snap',
         sender: body.sender || 'me',
-        status: body.status || 'opened',
-        id: body.id || `snap_${Date.now()}`,
+        status: body.status || 'delivered',
+        id: body.id || body.snapId || `snap_${Date.now()}`,
         title: body.title || 'Snap Photo',
         content: body.content || 'Snap photo attachment 📸',
+        image: body.image || null,
         time: nowTime,
         sentAt: now,
-        expiresAt: now + TWELVE_HOURS_MS
+        expiresAt: now + TWELVE_HOURS_MS,
+        replyTo: body.replyTo || null
       };
     } else if (body.type === 'voicenote') {
       newMsg = {
         type: 'voicenote',
-        sender: 'me',
+        sender: body.sender || 'me',
         duration: body.duration || '0:03',
-        time: nowTime
+        audio: body.audio || null,
+        time: nowTime,
+        sentAt: now,
+        replyTo: body.replyTo || null
       };
     } else {
       newMsg = {
         type: 'text',
         sender: body.sender || 'me',
         text: body.text || '',
-        time: nowTime
+        time: nowTime,
+        sentAt: now,
+        replyTo: body.replyTo || null
       };
     }
 

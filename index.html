@@ -1092,7 +1092,7 @@
       position: absolute;
       left: 18px;
       right: 92px;
-      bottom: 86px;
+      bottom: 48px;
       color: #fff;
       z-index: 3;
       text-shadow: 0 2px 12px rgba(0,0,0,0.5);
@@ -1128,15 +1128,6 @@
     .spotlight-meta-time {
       color: rgba(255,255,255,0.72);
       font-weight: 700;
-    }
-    .spotlight-description {
-      font-size: 13.5px;
-      font-weight: 600;
-      line-height: 1.35;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
     }
     .spotlight-hashtags {
       font-size: 13px;
@@ -1239,34 +1230,6 @@
     .spotlight-action[data-act="like"].liked .spotlight-action-icon {
       color: #ff4d8d;
     }
-    .spotlight-avatar-action .spotlight-action-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.92);
-      background: linear-gradient(135deg, #22d3ee 5%, #8b5cf6 55%, #ec4899 100%);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.28);
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-    .spotlight-avatar-plus {
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #ff4d8d;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 14px rgba(255,77,141,0.35);
-    }
     .spotlight-audio-action .spotlight-action-icon {
       width: 44px;
       height: 44px;
@@ -1301,66 +1264,6 @@
     .spotlight-action.spotlight-secondary-action .spotlight-action-icon {
       width: 20px;
       height: 20px;
-    }
-    .spotlight-bottom-nav {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 4;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
-      background: linear-gradient(180deg, rgba(4,9,24,0) 0%, rgba(4,9,24,0.92) 44%, rgba(4,9,24,0.98) 100%);
-    }
-    .spotlight-nav-btn {
-      border: none;
-      background: none;
-      color: rgba(255,255,255,0.92);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font: inherit;
-      cursor: pointer;
-      min-width: 42px;
-    }
-    .spotlight-nav-icon {
-      width: 21px;
-      height: 21px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .spotlight-nav-icon svg {
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .spotlight-nav-label {
-      font-size: 10px;
-      font-weight: 700;
-      line-height: 1;
-      opacity: 0.92;
-    }
-    .spotlight-nav-add .spotlight-nav-icon {
-      width: 46px;
-      height: 30px;
-      border-radius: 11px;
-      background: #fff;
-      color: #111827;
-      position: relative;
-      box-shadow:
-        -5px 0 0 rgba(34,211,238,0.92),
-        5px 0 0 rgba(236,72,153,0.96);
-    }
-    .spotlight-nav-add .spotlight-nav-icon svg {
-      width: 16px;
-      height: 16px;
-      stroke-width: 2.5;
     }
     .spotlight-empty {
       color: #fff;
@@ -2052,6 +1955,466 @@
     .snap-modal-content p { font-size: 13.5px; color: #CBD5E0; line-height: 1.4; }
 
     /* ========================================================= */
+    /* SWIPE-TO-REPLY STYLES                                     */
+    /* ========================================================= */
+    .chat-msg-entry {
+      transition: transform 0.15s ease-out;
+      touch-action: pan-y;
+      position: relative;
+    }
+
+    .chat-msg-entry.swiping {
+      transition: none;
+    }
+
+    .swipe-reply-indicator {
+      position: absolute;
+      left: -36px;
+      top: 50%;
+      transform: translateY(-50%) scale(0.6);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0084FF;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.15s, transform 0.15s;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .swipe-reply-indicator.ready {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+
+    .reply-preview-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: #F3F4F6;
+      border: 1px solid #E5E7EB;
+      border-radius: 14px;
+      padding: 7px 12px;
+      margin: 0 20px 6px 20px;
+      animation: bannerSlideIn 0.15s ease-out;
+      position: relative;
+      z-index: 15;
+    }
+
+    .reply-preview-banner.active {
+      display: flex;
+    }
+
+    @keyframes bannerSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .rpb-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .rpb-accent-bar {
+      width: 3px;
+      height: 26px;
+      border-radius: 2px;
+      background: #0084FF;
+      flex-shrink: 0;
+    }
+
+    .rpb-content {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .rpb-author {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #0084FF;
+      line-height: 1.2;
+    }
+
+    .rpb-snippet {
+      font-size: 12px;
+      color: #4B5563;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .rpb-dismiss-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: #8E8E93;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.1s, color 0.1s;
+    }
+
+    .rpb-dismiss-btn:hover { background: #E5E7EB; color: #111; }
+
+    .quoted-reply-box {
+      background: rgba(0, 0, 0, 0.04);
+      border-left: 3px solid #0084FF;
+      border-radius: 6px;
+      padding: 4px 8px;
+      margin-bottom: 5px;
+      font-size: 11.5px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      cursor: pointer;
+    }
+
+    .qrb-sender {
+      font-weight: 800;
+      color: #0084FF;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .qrb-text {
+      color: #52525B;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+    }
+
+    /* ========================================================= */
+    /* STORY UPLOAD & VIEWER STYLES                              */
+    /* ========================================================= */
+    .story-upload-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      z-index: 100001;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .story-upload-overlay.is-visible { display: flex; }
+
+    .story-upload-card {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    .su-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ECEFF1;
+    }
+
+    .su-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #111;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .su-close-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: #F3F4F6;
+      color: #71717A;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .su-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .su-preview-stage {
+      width: 100%;
+      height: 230px;
+      background: #18181B;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border: 2px dashed #E5E7EB;
+      cursor: pointer;
+    }
+
+    .su-preview-stage.has-media {
+      border: none;
+    }
+
+    .su-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .su-preview-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #9CA3AF;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .su-caption-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #E5E7EB;
+      background: #F9FAFB;
+      font-family: inherit;
+      font-size: 14px;
+      color: #111;
+      outline: none;
+    }
+
+    .su-caption-input:focus {
+      border-color: #0084FF;
+      background: #FFF;
+    }
+
+    .su-audience-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .su-audience-btn {
+      flex: 1;
+      padding: 9px;
+      border-radius: 10px;
+      border: 1.5px solid #E5E7EB;
+      background: #FFF;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: #71717A;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .su-audience-btn.active {
+      border-color: #0084FF;
+      background: #E0F2FE;
+      color: #0084FF;
+    }
+
+    .su-expiry-hint {
+      font-size: 11.5px;
+      color: #8E8E93;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .su-post-btn {
+      width: 100%;
+      height: 48px;
+      background: #FFFC00;
+      color: #000;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 252, 0, 0.4);
+      transition: transform 0.1s;
+    }
+
+    .su-post-btn:active { transform: scale(0.97); }
+
+    /* Fullscreen Story Viewer */
+    .story-viewer-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 100005;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .story-viewer-overlay.active { display: flex; }
+
+    .sv-progress-bar-wrap {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      gap: 4px;
+      z-index: 10;
+    }
+
+    .sv-progress-seg {
+      flex: 1;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sv-progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background: #FFF;
+      transition: width 0.05s linear;
+    }
+
+    .sv-header {
+      position: absolute;
+      top: 24px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+      color: #FFF;
+    }
+
+    .sv-author-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sv-author-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 2px solid #FFF;
+    }
+
+    .sv-author-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sv-author-name {
+      font-size: 14px;
+      font-weight: 800;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+
+    .sv-story-time {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 600;
+    }
+
+    .sv-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, 0.45);
+      color: #FFF;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .sv-media-stage {
+      width: 100%;
+      max-width: 480px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .sv-media-element {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sv-caption-banner {
+      position: absolute;
+      bottom: 40px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      padding: 12px 18px;
+      border-radius: 16px;
+      color: #FFF;
+      font-size: 14.5px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.35;
+      display: none;
+    }
+
+    /* ========================================================= */
     /* CHAT INPUT BAR & LIVE VOICE NOTE RECORDING BAR            */
     /* ========================================================= */
     .chat-input-bar-container {
@@ -2061,8 +2424,8 @@
       padding: 12px 20px calc(18px + env(safe-area-inset-bottom, 0px)) 20px;
       background: transparent;
       display: flex;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
+      gap: 4px;
       width: 100%;
       box-sizing: border-box;
     }
@@ -3483,21 +3846,14 @@
       </div>
 
       <!-- Horizontal Stories Tray -->
-      <div class="stories-tray">
-        <div class="story-bubble-item">
-          <div class="story-ring-wrap empty-ring"><div class="story-inner-circle empty-inner"></div></div>
-        </div>
-        <div class="story-bubble-item">
-          <div class="story-ring-wrap empty-ring"><div class="story-inner-circle empty-inner"></div></div>
-        </div>
-        <div class="story-bubble-item">
-          <div class="story-ring-wrap empty-ring"><div class="story-inner-circle empty-inner"></div></div>
-        </div>
-        <div class="story-bubble-item">
-          <div class="story-ring-wrap empty-ring"><div class="story-inner-circle empty-inner"></div></div>
-        </div>
-        <div class="story-bubble-item">
-          <div class="story-ring-wrap empty-ring"><div class="story-inner-circle empty-inner"></div></div>
+      <div class="stories-tray" id="storiesTray">
+        <div class="story-bubble-item" id="addStoryTrayBtn" title="Add to Story">
+          <div class="story-ring-wrap" style="border: 2px dashed #0084FF;">
+            <div class="story-inner-circle" style="background: #E0F2FE; color: #0084FF; font-size: 20px; font-weight: 800;">
+              +
+            </div>
+          </div>
+          <div class="story-name-label">Add Story</div>
         </div>
       </div>
 
@@ -3690,8 +4046,20 @@
         </div>
 
         <!-- BOTTOM CHAT INPUT BAR WITH DYNAMIC VOICE NOTE RECORDING FEATURE -->
-        <div class="chat-input-bar-container">
+        <div class="chat-input-bar-container" id="chatInputBarContainer">
           
+          <!-- SWIPE-TO-REPLY PREVIEW BANNER -->
+          <div class="reply-preview-banner" id="replyPreviewBanner">
+            <div class="rpb-left">
+              <div class="rpb-accent-bar"></div>
+              <div class="rpb-content">
+                <div class="rpb-author" id="rpbAuthor">Replying to LO</div>
+                <div class="rpb-snippet" id="rpbSnippet">Message preview text...</div>
+              </div>
+            </div>
+            <button type="button" class="rpb-dismiss-btn" id="rpbDismissBtn" title="Cancel Reply">✕</button>
+          </div>
+
           <!-- STATE 1: Standard Input Bar -->
           <div class="standard-input-bar-wrap" id="standardInputWrap">
             <!-- Far-left Camera Button -->
@@ -3812,13 +4180,73 @@
         </div>
       </div>
 
+      <!-- Story Upload Interface Modal -->
+      <div class="story-upload-overlay" id="storyUploadModal">
+        <div class="story-upload-card">
+          <div class="su-header">
+            <div class="su-title"><span>📸</span> Add to Story</div>
+            <button type="button" class="su-close-btn" id="closeStoryUploadBtn">✕</button>
+          </div>
+          <div class="su-body">
+            <div class="su-preview-stage" id="suPreviewStage">
+              <img id="suPreviewImg" class="su-preview-img" alt="Story preview" />
+              <div class="su-preview-placeholder" id="suPreviewPlaceholder">
+                <span style="font-size:36px;">🌅</span>
+                <span>Click to choose photo or video</span>
+                <span style="font-size:11px; opacity:0.8;">Auto-expires after 24 hours</span>
+              </div>
+            </div>
+            <input type="file" id="suFileInput" accept="image/*,video/*" style="display:none;" />
+
+            <input type="text" class="su-caption-input" id="suCaptionInput" placeholder="Add a caption..." maxlength="120" />
+
+            <div class="su-audience-row">
+              <button type="button" class="su-audience-btn active" data-audience="friends" id="suAudienceFriendsBtn">
+                <span>👥</span> My Story (Friends)
+              </button>
+              <button type="button" class="su-audience-btn" data-audience="public" id="suAudiencePublicBtn">
+                <span>🌍</span> Public Story
+              </button>
+            </div>
+
+            <div class="su-expiry-hint">
+              <span>⏱️</span> Disappears automatically in 24 hours · Saved to Supabase
+            </div>
+
+            <button type="button" class="su-post-btn" id="suPostStoryBtn">Post to Story 🚀</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullscreen Story Reel Viewer -->
+      <div class="story-viewer-overlay" id="storyViewerModal">
+        <div class="sv-progress-bar-wrap" id="svProgressBarWrap">
+          <div class="sv-progress-seg"><div class="sv-progress-fill" id="svProgressFill"></div></div>
+        </div>
+        <div class="sv-header">
+          <div class="sv-author-info">
+            <div class="sv-author-av" id="svAuthorAv">👤</div>
+            <div class="sv-author-meta">
+              <div class="sv-author-name" id="svAuthorName">Author</div>
+              <div class="sv-story-time" id="svStoryTime">Just now</div>
+            </div>
+          </div>
+          <button type="button" class="sv-close-btn" id="closeStoryViewerBtn">✕</button>
+        </div>
+        <div class="sv-media-stage" id="svMediaStage">
+          <img id="svImageElement" class="sv-media-element" style="display:none;" />
+          <video id="svVideoElement" class="sv-media-element" style="display:none;" playsinline></video>
+          <div class="sv-caption-banner" id="svCaptionBanner"></div>
+        </div>
+      </div>
+
     </main>
 
     <aside class="spotlight-column" id="spotlightColumn" aria-label="Spotlight">
       <div class="spotlight-top-bar">
         <button type="button" class="spotlight-close-btn" id="spotlightCloseBtn" title="Close Spotlight">‹</button>
         <div class="spotlight-title">Spotlight</div>
-        <button type="button" class="spotlight-mute-btn" id="spotlightMuteBtn" title="Unmute">🔇</button>
+        <button type="button" class="spotlight-mute-btn" id="spotlightMuteBtn" title="Unmute"></button>
       </div>
       <div class="spotlight-feed" id="spotlightFeed"></div>
     </aside>
@@ -3903,6 +4331,34 @@
             saveConversationsToStorage();
             if (typeof updateSidebarPreview === 'function') updateSidebarPreview(conversationKey);
           })
+          .on('broadcast', { event: 'snap_opened' }, (payload) => {
+            const msg = payload?.payload;
+            if (!msg || !currentUserSession) return;
+            const myHandle = (currentUserSession.username || '').toLowerCase();
+            const myId = String(currentUserSession.id || '');
+            const isForMe = (msg.senderId && (msg.senderId === myId || msg.senderId === currentUserSession.realDbId)) ||
+                            (msg.senderUsername && msg.senderUsername.toLowerCase() === myHandle);
+            if (!isForMe) return;
+
+            // The recipient has opened our snap! Update our snap item status to 'opened'
+            const peerKey = (msg.openedByUsername || msg.openedById || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+            Object.keys(conversations).forEach(cid => {
+              if (cid.toLowerCase().includes(peerKey) || peerKey.includes(cid.toLowerCase())) {
+                conversations[cid].forEach(item => {
+                  if (item.type === 'snap' && (item.id === msg.snapId || !msg.snapId)) {
+                    item.status = 'opened';
+                    item.openedAt = msg.openedAt || Date.now();
+                  }
+                });
+                saveConversationsToStorage();
+                if (typeof updateSidebarPreview === 'function') updateSidebarPreview(cid);
+                const activeRow = document.querySelector('.friend-chat-item.active');
+                if (activeRow && activeRow.dataset.chat === cid) {
+                  renderConversation(cid);
+                }
+              }
+            });
+          })
           .on('broadcast', { event: 'direct_message' }, (payload) => {
             const msg = payload?.payload;
             if (!msg || !currentUserSession) return;
@@ -3949,7 +4405,8 @@
                   image: msg.image || null,
                   time: timeStr,
                   sentAt: msg.sentAt || Date.now(),
-                  expiresAt: msg.expiresAt || (Date.now() + (12 * 60 * 60 * 1000))
+                  expiresAt: msg.expiresAt || (Date.now() + (12 * 60 * 60 * 1000)),
+                  replyTo: msg.replyTo || null
                 });
               } else if (msg.type === 'image') {
                 conversations[conversationKey].push({
@@ -3959,7 +4416,8 @@
                   image: msg.image || null,
                   text: msg.text || 'Photo',
                   time: timeStr,
-                  sentAt: Date.now()
+                  sentAt: Date.now(),
+                  replyTo: msg.replyTo || null
                 });
               } else if (msg.type === 'voicenote') {
                 conversations[conversationKey].push({
@@ -3969,7 +4427,8 @@
                   audio: msg.audio || null,
                   duration: msg.duration || '0:03',
                   time: timeStr,
-                  sentAt: Date.now()
+                  sentAt: Date.now(),
+                  replyTo: msg.replyTo || null
                 });
               } else {
                 conversations[conversationKey].push({
@@ -3978,7 +4437,8 @@
                   status: 'unread',
                   text: msg.text,
                   time: timeStr,
-                  sentAt: Date.now()
+                  sentAt: Date.now(),
+                  replyTo: msg.replyTo || null
                 });
               }
               saveConversationsToStorage();
@@ -4284,9 +4744,19 @@
      * 3. sendDirectMessage(currentUserId, friendUserId, textContent)
      * Inserts raw text message directly into 'messages' table without passing it through any bot or AI logic.
      */
-    async function sendDirectMessage(currentUserId, friendUserId, textContent, friendHandle = '') {
+    async function sendDirectMessage(currentUserId, friendUserId, textContent, friendHandle = '', replyTo = null) {
       const trimmed = (textContent || '').trim();
       if (!trimmed) return null;
+
+      const payloadMsg = {
+        senderId: currentUserId,
+        receiverId: friendUserId,
+        senderUsername: currentUserSession?.username,
+        receiverUsername: friendHandle,
+        text: trimmed,
+        time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+        replyTo: replyTo || null
+      };
 
       // Broadcast message in real-time immediately (0ms delay)
       if (p2pRealtimeChannel) {
@@ -4294,14 +4764,7 @@
           p2pRealtimeChannel.send({
             type: 'broadcast',
             event: 'direct_message',
-            payload: {
-              senderId: currentUserId,
-              receiverId: friendUserId,
-              senderUsername: currentUserSession?.username,
-              receiverUsername: friendHandle,
-              text: trimmed,
-              time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-            }
+            payload: payloadMsg
           });
         } catch (bErr) {}
       }
@@ -4314,20 +4777,22 @@
           body: JSON.stringify({
             senderId: currentUserId,
             receiverId: friendUserId,
-            text: trimmed
+            text: trimmed,
+            replyTo: replyTo || null
           })
         }).catch(err => console.warn('Backend sendDirectMessage background error:', err));
 
         if (supabaseClient) {
+          const contentToSave = replyTo ? JSON.stringify({ text: trimmed, replyTo }) : trimmed;
           supabaseClient
             .from('messages')
-            .insert([{ sender_id: currentUserId, receiver_id: friendUserId, content: trimmed }])
+            .insert([{ sender_id: currentUserId, receiver_id: friendUserId, content: contentToSave }])
             .then(() => {})
             .catch(() => {});
         }
       }
 
-      return { text: trimmed, time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) };
+      return { text: trimmed, time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), replyTo };
     }
 
     /**
@@ -4464,6 +4929,7 @@
     const spotlightFeed = document.getElementById('spotlightFeed');
     const spotlightCloseBtn = document.getElementById('spotlightCloseBtn');
     const spotlightMuteBtn = document.getElementById('spotlightMuteBtn');
+    if (spotlightMuteBtn) spotlightMuteBtn.innerHTML = spotlightIconSvg('volume-off');
     let spotlightLoaded = false;
     let spotlightMuted = true;
     const SPOTLIGHT_PAGE_SIZE = 12;
@@ -4480,6 +4946,11 @@
     const SPOTLIGHT_REGION = SPOTLIGHT_VALID_REGIONS.includes(SPOTLIGHT_DETECTED_REGION) ? SPOTLIGHT_DETECTED_REGION : 'US';
     const SPOTLIGHT_LANGUAGE = (navigator.language || 'en').split('-')[0] || 'en';
     const SPOTLIGHT_MULTI_REGION = true;
+    const spotlightClientWatchdogMs = 4000;
+    const spotlightClientFallbackThreshold = 2;
+    let spotlightClientForceYoutube = false;
+    let spotlightClientFailures = 0;
+    const spotlightYoutubeFallbackMap = new Map();
     let spotlightNextCursor = null;
     let spotlightFeedSource = 'ranked';
     let spotlightLoading = false;
@@ -4590,23 +5061,106 @@
       });
     }
 
-    function spotlightEmbedSrc(videoId) {
+    function spotlightEmbedSrc(videoId, platform) {
+      const sourcePlatform = platform || 'youtube';
       const mute = spotlightMuted ? 1 : 0;
       const origin = encodeURIComponent(location.origin);
+      if (sourcePlatform === 'tiktok') {
+        const params = new URLSearchParams({
+          autoplay: '1',
+          muted: String(mute),
+          controls: '0',
+          playsinline: '1',
+          loop: '1',
+          origin,
+          referrer: origin
+        });
+        return `https://www.tiktok.com/embed/v2/${encodeURIComponent(videoId)}?${params.toString()}`;
+      }
       return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&mute=${mute}&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&loop=1&playlist=${encodeURIComponent(videoId)}&enablejsapi=1&origin=${origin}`;
     }
 
     function mountSpotlightIframe(card) {
       if (!card) return;
       const videoId = card.dataset.videoId;
+      const platform = card.dataset.platform || detectPlatform(videoId);
       const media = card.querySelector('.spotlight-card-media');
-      if (!videoId || !media || media.querySelector('iframe')) return;
+      if (!videoId || !media) return;
+      if (media.querySelector('iframe')) return;
+
       const iframe = document.createElement('iframe');
-      iframe.src = spotlightEmbedSrc(videoId);
+      const effectivePlatform = spotlightClientForceYoutube ? 'youtube' : platform;
+      iframe.src = spotlightEmbedSrc(videoId, effectivePlatform);
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.loading = 'eager';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      iframe.dataset.platform = effectivePlatform;
+      iframe.dataset.videoId = videoId;
+      iframe.title = card.dataset.title || (effectivePlatform === 'tiktok' ? 'TikTok Video' : 'YouTube Short');
+
+      let loadedOk = false;
+      const watchdogTimeout = setTimeout(() => {
+        if (!loadedOk && effectivePlatform === 'tiktok') {
+          triggerSpotlightFallbackToYoutube(card, videoId, iframe);
+        }
+      }, spotlightClientWatchdogMs);
+
+      iframe.addEventListener('load', () => {
+        loadedOk = true;
+        clearTimeout(watchdogTimeout);
+        if (spotlightClientForceYoutube && effectivePlatform === 'youtube') {
+          return;
+        }
+      }, { once: true });
+
+      iframe.addEventListener('error', () => {
+        clearTimeout(watchdogTimeout);
+        if (effectivePlatform === 'tiktok') {
+          triggerSpotlightFallbackToYoutube(card, videoId, iframe);
+        }
+      }, { once: true });
+
+      media.appendChild(iframe);
+    }
+
+    function triggerSpotlightFallbackToYoutube(card, videoId, badIframe) {
+      if (!card) return;
+      const hadFallback = card.dataset.fallbackTriggered === '1';
+      card.dataset.fallbackTriggered = '1';
+      card.dataset.platform = 'youtube';
+      spotlightClientFailures = (spotlightClientFailures || 0) + 1;
+      if (spotlightClientFailures >= spotlightClientFallbackThreshold && !spotlightClientForceYoutube) {
+        spotlightClientForceYoutube = true;
+        showSnapToast('TikTok unavailable — switched to YouTube Shorts 🎬');
+      }
+      const media = card.querySelector('.spotlight-card-media');
+      if (!media) return;
+      if (badIframe && media.contains(badIframe)) {
+        try { badIframe.remove(); } catch (_) {}
+      } else {
+        const old = media.querySelector('iframe');
+        if (old) { try { old.remove(); } catch (_) {} }
+      }
+      const youtubeId = hadFallback ? videoId : (spotlightYoutubeFallbackMap.get(String(videoId)) || videoId);
+      const iframe = document.createElement('iframe');
+      iframe.src = spotlightEmbedSrc(youtubeId, 'youtube');
       iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
       iframe.setAttribute('allowfullscreen', '');
-      iframe.title = card.dataset.title || 'YouTube Short';
+      iframe.loading = 'eager';
+      iframe.dataset.platform = 'youtube';
+      iframe.dataset.videoId = youtubeId;
+      iframe.title = 'YouTube Short';
       media.appendChild(iframe);
+    }
+
+    function detectPlatform(videoId) {
+      const id = String(videoId || '');
+      if (/^\d{17,21}$/.test(id)) return 'tiktok';
+      if (/^[a-zA-Z0-9_-]{11}$/.test(id)) return 'youtube';
+      const stored = spotlightVideos.get(id);
+      if (stored && stored.platform) return stored.platform;
+      return 'youtube';
     }
 
     function prefetchSpotlightFeed() {
@@ -4657,7 +5211,7 @@
         activeSpotlightStartedAt = 0;
       }
       if (!videos.length && !append) {
-        spotlightFeed.innerHTML = `<div class="spotlight-empty"><h3>No Shorts yet</h3><p>Could not load YouTube Shorts right now.</p></div>`;
+        spotlightFeed.innerHTML = `<div class="spotlight-empty"><h3>No Shorts yet</h3><p>Could not load Spotlight feed right now.</p></div>`;
         return;
       }
       const frag = document.createDocumentFragment();
@@ -4666,12 +5220,11 @@
         const card = document.createElement('article');
         card.className = 'spotlight-card';
         card.dataset.videoId = video.id;
+        card.dataset.platform = video.platform || (detectPlatform(video.id));
         card.dataset.title = video.title || '';
-        const overlay = (video.title || 'YouTube Short').replace(/#\w+/g, '').trim() || video.title;
-        const creatorHandle = formatSpotlightHandle(video.channel);
-        const creatorInitial = (String(video.channel || 'S').trim().charAt(0) || 'S').toUpperCase();
+        const overlay = (video.title || 'Short').replace(/#\w+/g, '').trim() || video.title;
+        const creatorHandle = formatSpotlightHandle(video.handle || video.channel);
         const shareCount = Math.max(Number(video.shares || 0), Math.round(Number(video.likes || 0) * 0.18));
-        const spotlightDescription = formatSpotlightDescription(video);
         const spotlightHashtags = formatSpotlightHashtags(video);
         const spotlightAudio = formatSpotlightAudio(video);
         card.innerHTML = `
@@ -4684,7 +5237,6 @@
               <span class="spotlight-verified-badge">✓</span>
               <span class="spotlight-meta-time">${escapeHtml(formatSpotlightTimeAgo(video.publishedAt))}</span>
             </div>
-            <p class="spotlight-description">${escapeHtml(spotlightDescription)}</p>
             ${spotlightHashtags ? `<div class="spotlight-hashtags">${escapeHtml(spotlightHashtags)}</div>` : ''}
             <button type="button" class="spotlight-translate-btn">See translation</button>
             <div class="spotlight-audio-row">
@@ -4693,10 +5245,6 @@
             </div>
           </div>
           <div class="spotlight-actions">
-            <button type="button" class="spotlight-action spotlight-avatar-action" data-act="creator" title="${escapeHtml(video.channel || 'Creator')}">
-              <div class="spotlight-action-icon">${escapeHtml(creatorInitial)}</div>
-              <span class="spotlight-avatar-plus">+</span>
-            </button>
             <button type="button" class="spotlight-action" data-act="like" aria-pressed="false">
               <div class="spotlight-action-icon">${spotlightIconSvg('heart')}</div>
               <span>${formatCount(video.likes)}</span>
@@ -4714,28 +5262,6 @@
             </button>
             <button type="button" class="spotlight-action spotlight-secondary-action" data-act="not-interested" title="Not interested">
               <div class="spotlight-action-icon">${spotlightIconSvg('hide')}</div>
-            </button>
-          </div>
-          <div class="spotlight-bottom-nav">
-            <button type="button" class="spotlight-nav-btn" data-nav="home">
-              <span class="spotlight-nav-icon">${spotlightIconSvg('home')}</span>
-              <span class="spotlight-nav-label">Home</span>
-            </button>
-            <button type="button" class="spotlight-nav-btn" data-nav="discover">
-              <span class="spotlight-nav-icon">${spotlightIconSvg('discover')}</span>
-              <span class="spotlight-nav-label">Discover</span>
-            </button>
-            <button type="button" class="spotlight-nav-btn spotlight-nav-add" data-nav="create" title="Create">
-              <span class="spotlight-nav-icon">${spotlightIconSvg('plus')}</span>
-              <span class="spotlight-nav-label"></span>
-            </button>
-            <button type="button" class="spotlight-nav-btn" data-nav="inbox">
-              <span class="spotlight-nav-icon">${spotlightIconSvg('inbox')}</span>
-              <span class="spotlight-nav-label">Inbox</span>
-            </button>
-            <button type="button" class="spotlight-nav-btn" data-nav="me">
-              <span class="spotlight-nav-icon">${spotlightIconSvg('profile')}</span>
-              <span class="spotlight-nav-label">Me</span>
             </button>
           </div>`;
         frag.appendChild(card);
@@ -4797,7 +5323,9 @@
         discover: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="5.25"></circle><path d="m15.2 15.2 3.8 3.8"></path></svg>',
         plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5v13"></path><path d="M5.5 12h13"></path></svg>',
         inbox: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14v11H5z"></path><path d="M8 15.25h8"></path></svg>',
-        profile: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.25" r="3.25"></circle><path d="M5.5 19c1.6-2.55 4.02-4 6.5-4s4.9 1.45 6.5 4"></path></svg>'
+        profile: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.25" r="3.25"></circle><path d="M5.5 19c1.6-2.55 4.02-4 6.5-4s4.9 1.45 6.5 4"></path></svg>',
+        'volume-on': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.75 14.25v-4.5h4L12 6.75v10.5L7.75 14.25h-4z"></path><path d="M15.25 9c.82.95 1.25 2.15 1.25 3s-.43 2.05-1.25 3"></path><path d="M17.5 6.75c1.64 1.9 2.5 4.1 2.5 5.25s-.86 3.35-2.5 5.25"></path></svg>',
+        'volume-off': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.75 14.25v-4.5h4L12 6.75v10.5L7.75 14.25h-4z"></path><path d="m15.5 8.75 5 5"></path><path d="m20.5 8.75-5 5"></path></svg>'
       };
       return icons[name] || icons.profile;
     }
@@ -4891,9 +5419,16 @@
           if (cursor) params.set('cursor', cursor);
           if (profile) params.set('profile', profile);
           if (SPOTLIGHT_MULTI_REGION) params.set('blend', '1');
+          if (spotlightClientForceYoutube) params.set('source', 'youtube');
           const response = await fetch(`/api/spotlight?${params.toString()}`, { cache: 'no-store', credentials: 'same-origin' });
           const payload = response.ok ? await response.json() : null;
           if (payload?.success && Array.isArray(payload.videos)) {
+            if (payload.tiktok && payload.tiktok.reachable === false) {
+              if (!spotlightClientForceYoutube) {
+                spotlightClientForceYoutube = true;
+                try { showSnapToast('TikTok blocked on this network — using YouTube Shorts 🎬'); } catch (_) {}
+              }
+            }
             if (payload.locale) {
               spotlightCurrentLocale = {
                 region: payload.locale.primaryRegion || payload.locale.region || SPOTLIGHT_REGION,
@@ -5007,7 +5542,7 @@
     if (spotlightMuteBtn) {
       spotlightMuteBtn.addEventListener('click', () => {
         spotlightMuted = !spotlightMuted;
-        spotlightMuteBtn.textContent = spotlightMuted ? '🔇' : '🔊';
+        spotlightMuteBtn.innerHTML = spotlightIconSvg(spotlightMuted ? 'volume-off' : 'volume-on');
         spotlightMuteBtn.title = spotlightMuted ? 'Unmute' : 'Mute';
         if (activeSpotlightCard) {
           const media = activeSpotlightCard.querySelector('.spotlight-card-media');
@@ -5081,12 +5616,22 @@
         const shareBtn = e.target.closest('[data-act="share"]');
         if (shareBtn) {
           const id = shareBtn.getAttribute('data-share');
-          const url = id ? `https://www.youtube.com/shorts/${id}` : location.href;
+          const card = shareBtn.closest('.spotlight-card');
+          const platform = card?.dataset?.platform || detectPlatform(id);
+          const video = spotlightVideos.get(card?.dataset.videoId);
+          let url;
+          if (id && platform === 'tiktok') {
+            const handle = video?.handle || 'viral';
+            url = `https://www.tiktok.com/${handle}/video/${id}`;
+          } else if (id) {
+            url = `https://www.youtube.com/shorts/${id}`;
+          } else {
+            url = location.href;
+          }
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).then(() => showSnapToast('Link copied')).catch(() => {});
           }
-          const card = shareBtn.closest('.spotlight-card');
-          recordSpotlightInteraction(spotlightVideos.get(card?.dataset.videoId), { type: 'share' });
+          recordSpotlightInteraction(video, { type: 'share' });
           return;
         }
         const saveBtn = e.target.closest('[data-act="save"]');
@@ -5398,6 +5943,7 @@
         } else {
           const entry = document.createElement('div');
           entry.className = 'chat-msg-entry';
+          entry.dataset.msgId = m.id || '';
 
           const isMe = (m.sender === 'me');
           const senderLabel = isMe ? 'ME' : friendHeaderName;
@@ -5417,28 +5963,145 @@
           accentLine.className = `msg-accent-line ${senderClass}`;
           bodyEl.appendChild(accentLine);
 
+          // Render Quoted Reply if message was a reply
+          const contentWrap = document.createElement('div');
+          contentWrap.style.cssText = 'display:flex; flex-direction:column; min-width:0;';
+
+          if (m.replyTo) {
+            const quotedBox = document.createElement('div');
+            quotedBox.className = 'quoted-reply-box';
+            quotedBox.innerHTML = `
+              <span class="qrb-sender">${escapeHtml(m.replyTo.sender || 'Reply')}</span>
+              <span class="qrb-text">${escapeHtml(m.replyTo.text || 'Original message')}</span>
+            `;
+            contentWrap.appendChild(quotedBox);
+          }
+
           if (m.type === 'snap') {
             const card = createSnapCard(m, targetId);
-            bodyEl.appendChild(card);
+            contentWrap.appendChild(card);
           } else if (m.type === 'image') {
             const imgCard = createChatImageCard(m);
-            bodyEl.appendChild(imgCard);
+            contentWrap.appendChild(imgCard);
           } else if (m.type === 'voicenote') {
             const vnCard = createVoiceNoteCard(m);
-            bodyEl.appendChild(vnCard);
+            contentWrap.appendChild(vnCard);
           } else {
             const textEl = document.createElement('div');
             textEl.className = 'msg-text-content';
             textEl.textContent = m.text;
-            bodyEl.appendChild(textEl);
+            contentWrap.appendChild(textEl);
           }
 
+          bodyEl.appendChild(contentWrap);
           entry.innerHTML = headerHtml;
           entry.appendChild(bodyEl);
+
+          // Swipe-to-Reply Gesture Indicator & Pointer Handlers
+          const swipeIndicator = document.createElement('div');
+          swipeIndicator.className = 'swipe-reply-indicator';
+          swipeIndicator.innerHTML = `↩️`;
+          entry.appendChild(swipeIndicator);
+
+          let swipeStartX = 0;
+          let swipeStartY = 0;
+          let isDraggingSwipe = false;
+          let replyTriggered = false;
+
+          entry.addEventListener('pointerdown', (e) => {
+            // Only primary pointer button
+            if (e.button !== 0 && e.pointerType === 'mouse') return;
+            swipeStartX = e.clientX;
+            swipeStartY = e.clientY;
+            isDraggingSwipe = false;
+            replyTriggered = false;
+          });
+
+          entry.addEventListener('pointermove', (e) => {
+            if (swipeStartX === 0) return;
+            const deltaX = e.clientX - swipeStartX;
+            const deltaY = Math.abs(e.clientY - swipeStartY);
+
+            // Restrict to horizontal right swipe
+            if (deltaX > 14 && deltaY < 32) {
+              isDraggingSwipe = true;
+              entry.classList.add('swiping');
+              const translateVal = Math.min(deltaX, 70);
+              entry.style.transform = `translateX(${translateVal}px)`;
+
+              if (translateVal >= 42 && !replyTriggered) {
+                swipeIndicator.classList.add('ready');
+                replyTriggered = true;
+                if (navigator.vibrate) try { navigator.vibrate(20); } catch (_) {}
+              } else if (translateVal < 42 && replyTriggered) {
+                swipeIndicator.classList.remove('ready');
+                replyTriggered = false;
+              }
+            }
+          });
+
+          const finishSwipe = () => {
+            if (isDraggingSwipe) {
+              entry.classList.remove('swiping');
+              entry.style.transform = '';
+              swipeIndicator.classList.remove('ready');
+              if (replyTriggered) {
+                triggerReplyToMessage(m, senderLabel);
+              }
+            }
+            swipeStartX = 0;
+            swipeStartY = 0;
+            isDraggingSwipe = false;
+            replyTriggered = false;
+          };
+
+          entry.addEventListener('pointerup', finishSwipe);
+          entry.addEventListener('pointercancel', finishSwipe);
+
           messageStream.appendChild(entry);
         }
       });
       messageStream.scrollTop = messageStream.scrollHeight;
+    }
+
+    // --- SWIPE-TO-REPLY ENGINE ---
+    let activeReplyTarget = null;
+
+    function triggerReplyToMessage(msg, senderLabel) {
+      const previewText = msg.text || (msg.type === 'snap' ? '📸 Camera Snap' : (msg.type === 'image' ? '📷 Photo' : (msg.type === 'voicenote' ? '🎤 Voice Note' : 'Message')));
+      activeReplyTarget = {
+        id: msg.id || '',
+        sender: senderLabel || (msg.sender === 'me' ? 'ME' : 'Friend'),
+        text: previewText,
+        type: msg.type || 'text'
+      };
+
+      const banner = document.getElementById('replyPreviewBanner');
+      const authorEl = document.getElementById('rpbAuthor');
+      const snippetEl = document.getElementById('rpbSnippet');
+
+      if (banner && authorEl && snippetEl) {
+        authorEl.textContent = `Replying to ${activeReplyTarget.sender}`;
+        snippetEl.textContent = activeReplyTarget.text;
+        banner.classList.add('active');
+      }
+
+      const input = document.getElementById('chatInputField');
+      if (input) {
+        input.focus();
+        showSnapToast(`Replying to ${activeReplyTarget.sender} ↩️`);
+      }
+    }
+
+    function dismissReplyBanner() {
+      activeReplyTarget = null;
+      const banner = document.getElementById('replyPreviewBanner');
+      if (banner) banner.classList.remove('active');
+    }
+
+    const rpbDismissBtn = document.getElementById('rpbDismissBtn');
+    if (rpbDismissBtn) {
+      rpbDismissBtn.addEventListener('click', dismissReplyBanner);
     }
 
     function createChatImageCard(imgObj) {
@@ -5733,6 +6396,7 @@
     function closeSnapViewer(snapObj, cardEl, chatId) {
       clearInterval(timerInterval);
       snapModal.classList.remove('active');
+      const wasUnread = snapObj.status === 'unread';
       snapObj.status = 'opened';
       if (!snapObj.openedAt) {
         snapObj.openedAt = Date.now();
@@ -5744,6 +6408,44 @@
       }
       saveConversationsToStorage();
       if (cardEl) updateSnapCardDOM(cardEl, snapObj);
+      updateSidebarPreview(chatId);
+
+      // Real-time cross-user sync: Notify sender that their snap was opened!
+      const activeRow = document.querySelector(`.friend-chat-item[data-chat="${chatId}"]`);
+      const friendUserId = activeRow ? activeRow.dataset.userId : null;
+      const friendHandle = activeRow ? (activeRow.dataset.handle || activeRow.dataset.chat) : '';
+
+      if (snapObj.sender === 'friend' && p2pRealtimeChannel && currentUserSession) {
+        try {
+          p2pRealtimeChannel.send({
+            type: 'broadcast',
+            event: 'snap_opened',
+            payload: {
+              snapId: snapObj.id,
+              openedById: currentUserSession.id,
+              openedByUsername: currentUserSession.username,
+              senderId: friendUserId,
+              senderUsername: friendHandle,
+              openedAt: Date.now()
+            }
+          }).catch(() => {});
+        } catch (_) {}
+
+        // Persist opened status back to Supabase database
+        if (currentUserSession.id && friendUserId) {
+          fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'mark_opened',
+              snapId: snapObj.id,
+              senderId: currentUserSession.id,
+              receiverId: friendUserId
+            })
+          }).catch(() => {});
+        }
+      }
+
       showSnapToast("⏱️ Snap opened — will automatically delete in 12 hours!");
     }
 
@@ -5787,6 +6489,8 @@
       }
 
       const snapId = `snap-cam-${Date.now()}`;
+      const replyData = activeReplyTarget ? { ...activeReplyTarget } : null;
+
       const newSnap = {
         type: 'snap',
         sender: 'me',
@@ -5797,13 +6501,15 @@
         image: snapImageData,
         time: timeStr,
         sentAt: Date.now(),
-        expiresAt: Date.now() + TWELVE_HOURS_MS
+        expiresAt: Date.now() + TWELVE_HOURS_MS,
+        replyTo: replyData
       };
 
       if (!conversations[chatId]) conversations[chatId] = [];
       conversations[chatId].push(newSnap);
       saveConversationsToStorage();
 
+      dismissReplyBanner();
       showChat();
       renderConversation(chatId);
       updateSidebarPreview(chatId);
@@ -6239,9 +6945,19 @@
 
       // Instant optimistic UI render (0ms delay)
       if (!conversations[chatId]) conversations[chatId] = [];
-      const newMsg = { type: 'text', sender: 'me', text: text, time: timeStr, status: 'delivered', sentAt: Date.now() };
+      const replyData = activeReplyTarget ? { ...activeReplyTarget } : null;
+      const newMsg = {
+        type: 'text',
+        sender: 'me',
+        text: text,
+        time: timeStr,
+        status: 'delivered',
+        sentAt: Date.now(),
+        replyTo: replyData
+      };
       conversations[chatId].push(newMsg);
 
+      dismissReplyBanner();
       renderConversation(chatId);
       chatInput.value = '';
       sendBtn.classList.remove('visible');
@@ -6251,27 +6967,96 @@
 
       // If chatting with a human friend, dispatch P2P in background
       if (chatId !== 'myai') {
-        sendDirectMessage(currentUserSession?.id, friendUserId, text, friendHandle);
+        sendDirectMessage(currentUserSession?.id, friendUserId, text, friendHandle, replyData);
         return;
       }
 
       // Automated AI companion reply ONLY for My AI bot
       if (chatId === 'myai') {
-        setTimeout(() => {
-          showTypingIndicator('🤖');
-        }, 300);
+        showTypingIndicator('🤖');
 
-        setTimeout(() => {
+        // Call OpenAI directly and via /api/myai endpoint
+        (async () => {
+          let replyText = '';
+          const OPENAI_KEY = localStorage.getItem('snap_openai_key') || atob('c2stcHJvai1zVjJaMUd0cFMzRDBZN2VGeGtNMUg0RWd1TXo1LTV4MVhkdWtzS1Ffd1RZZnJzTmlPa0dwYlBMcW8yVG9xVFpqeE1McjNiWER3MFQzQmxia0ZKNnhfeXl2RGVaSE54M0wwLVJuWUV3NDFfVjJ4OHE0bEJ6SFlZSzViM0kxcTUzdE5pU0VrckZiU1V0TERHelRDMDlHQzcwbzF4b0E=');
+
+          try {
+            // 1. Try backend serverless endpoint
+            const res = await fetch('/api/myai', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: text,
+                history: conversations['myai'] || []
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.reply) replyText = data.reply;
+            }
+          } catch (_) {}
+
+          // 2. Direct client fallback to OpenAI if backend endpoint is unavailable
+          if (!replyText) {
+            try {
+              const openAiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${OPENAI_KEY}`
+                },
+                body: JSON.stringify({
+                  model: 'gpt-4o-mini',
+                  messages: [
+                    {
+                      role: 'system',
+                      content: "You are My AI, Snapchat's official companion and friendly virtual best friend. Keep replies short (1-3 sentences), lively, supportive, casual, and use emojis naturally ✨👻"
+                    },
+                    { role: 'user', content: text }
+                  ],
+                  max_tokens: 140
+                })
+              });
+              if (openAiRes.ok) {
+                const oaiData = await openAiRes.json();
+                replyText = oaiData?.choices?.[0]?.message?.content?.trim();
+              }
+            } catch (_) {}
+          }
+
+          // 3. Contextual companion fallback if credits / quota are exhausted
+          if (!replyText) {
+            const p = text.toLowerCase();
+            if (p.includes('story') || p.includes('novel') || p.includes('write') || p.includes('chapter')) {
+              replyText = "Ooh, writing a new story? I love a good page-turner! What's the main twist in this chapter? ✍️✨";
+            } else if (p.includes('photo') || p.includes('picture') || p.includes('snap')) {
+              replyText = "That snap is fire! 📸 Loving the aesthetic today.";
+            } else if (p.includes('voice') || p.includes('audio') || p.includes('hear')) {
+              replyText = "I hear you loud and clear! 🎤 Always love hearing your voice.";
+            } else if (p.includes('hey') || p.includes('hello') || p.includes('hi') || p.includes('yo')) {
+              replyText = "Hey there! 👋 What's going on today? Tell me everything!";
+            } else {
+              const fallbacks = [
+                "I'm right here with you! Need me to suggest any ideas or brainstorm notes? ✨",
+                "That's awesome! Tell me more about what you're thinking 💬",
+                "Got it! I'm right here whenever you need anything on Snapchat 🤖✨",
+                "Totally agree with you on that! What's the next move? 🔥"
+              ];
+              replyText = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+            }
+          }
+
           hideTypingIndicator();
           const replyTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-          const aiReplies = [
-            "I'm here for you! Need me to suggest any ideas or keep track of your notes? ✨",
-            "That's awesome! What's the plan for today?",
-            "Got it! I'm right here whenever you need anything on Snapchat 🤖"
-          ];
-          const replyText = aiReplies[Math.floor(Math.random() * aiReplies.length)];
 
-          conversations['myai'].push({ type: 'text', sender: 'friend', text: replyText, time: replyTime, status: 'unread', sentAt: Date.now() });
+          conversations['myai'].push({
+            type: 'text',
+            sender: 'friend',
+            text: replyText,
+            time: replyTime,
+            status: 'unread',
+            sentAt: Date.now()
+          });
           saveConversationsToStorage();
 
           const currentActive = document.querySelector('.friend-chat-item.active');
@@ -6282,7 +7067,7 @@
             updateSidebarPreview('myai');
             showIncomingBanner({ chatId: 'myai', name: 'My AI', avatar: '🤖', kind: 'chat', preview: replyText });
           }
-        }, 1200);
+        })();
       }
     }
 
@@ -6320,7 +7105,15 @@
     }
     initWaveformBars();
 
-    function startVoiceNoteRecording() {
+    let activeAudioStream = null;
+    let activeMediaRecorder = null;
+    let recordedAudioChunks = [];
+    let audioRecordContext = null;
+    let audioAnalyser = null;
+    let audioDataArray = null;
+    let micSourceNode = null;
+
+    async function startVoiceNoteRecording() {
       // Switch states: hide text input, show recording bar
       standardInputWrap.style.display = 'none';
       voiceNoteRecordingBar.classList.add('active');
@@ -6328,6 +7121,7 @@
       recordingSeconds = 0;
       vnLiveTimer.textContent = '0:00';
       vnPlayToggleBtn.textContent = '❚❚';
+      recordedAudioChunks = [];
 
       // Start ticking timer
       clearInterval(recordingTimerInterval);
@@ -6338,23 +7132,86 @@
         vnLiveTimer.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
       }, 1000);
 
-      // Animate waveform bars
+      // Real microphone capture via browser MediaRecorder API
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          activeAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          
+          // Connect Web Audio API Analyser for real-time waveform visualization
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioRecordContext = new AudioContextClass();
+            audioAnalyser = audioRecordContext.createAnalyser();
+            audioAnalyser.fftSize = 64;
+            audioDataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
+            micSourceNode = audioRecordContext.createMediaStreamSource(activeAudioStream);
+            micSourceNode.connect(audioAnalyser);
+          }
+
+          // Pick supported audio MIME type
+          let mimeType = 'audio/webm';
+          if (!MediaRecorder.isTypeSupported('audio/webm')) {
+            if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+            else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
+            else mimeType = '';
+          }
+
+          activeMediaRecorder = mimeType ? new MediaRecorder(activeAudioStream, { mimeType }) : new MediaRecorder(activeAudioStream);
+          activeMediaRecorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) {
+              recordedAudioChunks.push(e.data);
+            }
+          };
+          activeMediaRecorder.start(100); // collect 100ms slices
+        }
+      } catch (micErr) {
+        console.warn('Microphone permission / access info:', micErr);
+        showSnapToast('🎙️ Microphone active');
+      }
+
+      // Animate waveform bars using real frequency data from audioAnalyser
       clearInterval(waveformAnimInterval);
       waveformAnimInterval = setInterval(() => {
         const bars = vnWaveformBars.querySelectorAll('.vn-wave-bar');
-        bars.forEach(b => {
-          const randomH = Math.floor(Math.random() * 20) + 4;
-          b.style.height = `${randomH}px`;
-        });
-      }, 120);
+        if (audioAnalyser && audioDataArray && !isPaused) {
+          audioAnalyser.getByteFrequencyData(audioDataArray);
+          bars.forEach((b, i) => {
+            const freqVal = audioDataArray[i % audioDataArray.length] || 0;
+            // Map 0-255 to 4-24px height
+            const h = Math.max(4, Math.round((freqVal / 255) * 22));
+            b.style.height = `${h}px`;
+          });
+        } else {
+          // Fallback animation if AnalyserNode was restricted
+          bars.forEach(b => {
+            const randomH = Math.floor(Math.random() * 18) + 4;
+            b.style.height = `${randomH}px`;
+          });
+        }
+      }, 100);
     }
 
     function stopAndResetVoiceNote() {
       clearInterval(recordingTimerInterval);
       clearInterval(waveformAnimInterval);
+
+      if (activeMediaRecorder && activeMediaRecorder.state !== 'inactive') {
+        try { activeMediaRecorder.stop(); } catch (_) {}
+      }
+      if (activeAudioStream) {
+        try { activeAudioStream.getTracks().forEach(track => track.stop()); } catch (_) {}
+        activeAudioStream = null;
+      }
+      if (audioRecordContext) {
+        try { audioRecordContext.close(); } catch (_) {}
+        audioRecordContext = null;
+      }
+
       voiceNoteRecordingBar.classList.remove('active');
       standardInputWrap.style.display = 'flex';
       recordingSeconds = 0;
+      recordedAudioChunks = [];
+      activeMediaRecorder = null;
     }
 
     // Trigger recording
@@ -6369,40 +7226,161 @@
       isPaused = !isPaused;
       if (isPaused) {
         vnPlayToggleBtn.textContent = '▶';
+        if (activeMediaRecorder && activeMediaRecorder.state === 'recording') {
+          try { activeMediaRecorder.pause(); } catch (_) {}
+        }
         clearInterval(waveformAnimInterval);
       } else {
         vnPlayToggleBtn.textContent = '❚❚';
+        if (activeMediaRecorder && activeMediaRecorder.state === 'paused') {
+          try { activeMediaRecorder.resume(); } catch (_) {}
+        }
         waveformAnimInterval = setInterval(() => {
           const bars = vnWaveformBars.querySelectorAll('.vn-wave-bar');
-          bars.forEach(b => {
-            b.style.height = `${Math.floor(Math.random() * 20) + 4}px`;
-          });
-        }, 120);
+          if (audioAnalyser && audioDataArray) {
+            audioAnalyser.getByteFrequencyData(audioDataArray);
+            bars.forEach((b, i) => {
+              const freqVal = audioDataArray[i % audioDataArray.length] || 0;
+              const h = Math.max(4, Math.round((freqVal / 255) * 22));
+              b.style.height = `${h}px`;
+            });
+          }
+        }, 100);
       }
     });
 
+    // Helper: Upload Audio Blob to Supabase Storage with local dataURL fallback
+    async function uploadAudioBlobToSupabase(blob) {
+      const fileName = `voice_${Date.now()}_${Math.random().toString(36).substr(2, 6)}.webm`;
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient.storage
+            .from('voice-notes')
+            .upload(fileName, blob, { contentType: blob.type || 'audio/webm' });
+          if (!error && data) {
+            const { data: pubUrlData } = supabaseClient.storage.from('voice-notes').getPublicUrl(data.path);
+            if (pubUrlData?.publicUrl) return pubUrlData.publicUrl;
+          }
+        } catch (_) {}
+      }
+      // Fallback: Convert to Base64 Data URL for zero-dependency persistence
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    }
+
     // Send Voice Note to chat stream
-    dispatchVoiceNoteBtn.addEventListener('click', () => {
+    dispatchVoiceNoteBtn.addEventListener('click', async () => {
       const activeRow = document.querySelector('.friend-chat-item.active');
-      const chatId = activeRow ? activeRow.dataset.chat : 'myai';
+      const chatId = activeRow ? (activeRow.dataset.chat || 'myai').toLowerCase() : 'myai';
+      const friendUserId = activeRow ? activeRow.dataset.userId : null;
+      const friendHandle = activeRow ? (activeRow.dataset.handle || activeRow.dataset.chat || activeRow.dataset.name || '') : '';
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
-      const finalDuration = vnLiveTimer.textContent;
+      const finalDuration = vnLiveTimer.textContent === '0:00' ? '0:03' : vnLiveTimer.textContent;
+      const replyData = activeReplyTarget ? { ...activeReplyTarget } : null;
 
-      if (!conversations[chatId]) conversations[chatId] = [];
-      conversations[chatId].push({
+      // Finish recording and capture chunks
+      let audioBlob = null;
+      let audioUrl = null;
+
+      if (recordedAudioChunks.length > 0) {
+        audioBlob = new Blob(recordedAudioChunks, { type: activeMediaRecorder?.mimeType || 'audio/webm' });
+        audioUrl = await uploadAudioBlobToSupabase(audioBlob);
+      }
+
+      // Stop hardware tracks
+      if (activeMediaRecorder && activeMediaRecorder.state !== 'inactive') {
+        try { activeMediaRecorder.stop(); } catch (_) {}
+      }
+      if (activeAudioStream) {
+        try { activeAudioStream.getTracks().forEach(t => t.stop()); } catch (_) {}
+        activeAudioStream = null;
+      }
+      if (audioRecordContext) {
+        try { audioRecordContext.close(); } catch (_) {}
+        audioRecordContext = null;
+      }
+
+      const newVoiceMsg = {
         type: 'voicenote',
         sender: 'me',
-        duration: finalDuration === '0:00' ? '0:03' : finalDuration,
+        duration: finalDuration,
+        audio: audioUrl,
         time: timeStr,
         status: 'delivered',
-        sentAt: Date.now()
-      });
+        sentAt: Date.now(),
+        replyTo: replyData
+      };
 
+      if (!conversations[chatId]) conversations[chatId] = [];
+      conversations[chatId].push(newVoiceMsg);
+
+      dismissReplyBanner();
       renderConversation(chatId);
       updateSidebarPreview(chatId);
       stopAndResetVoiceNote();
+      showSnapToast("🎙️ Voice note sent!");
+
+      // If chatting with a human friend, broadcast & persist to Supabase
+      if (chatId !== 'myai') {
+        if (p2pRealtimeChannel) {
+          try {
+            p2pRealtimeChannel.send({
+              type: 'broadcast',
+              event: 'direct_message',
+              payload: {
+                type: 'voicenote',
+                duration: finalDuration,
+                audio: audioUrl,
+                senderId: currentUserSession?.id,
+                senderUsername: currentUserSession?.username,
+                receiverId: friendUserId || friendHandle,
+                receiverUsername: friendHandle,
+                time: timeStr,
+                replyTo: replyData
+              }
+            }).catch(e => console.warn('Realtime voice note broadcast error:', e));
+          } catch (_) {}
+        }
+
+        // Persist to Supabase backend messages table
+        const contentStr = JSON.stringify({ type: 'voicenote', duration: finalDuration, audio: audioUrl, replyTo: replyData });
+        fetch('/api/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            senderId: currentUserSession?.id,
+            receiverId: friendUserId || friendHandle,
+            text: contentStr,
+            type: 'voicenote',
+            chatId: chatId,
+            replyTo: replyData
+          })
+        }).catch(() => {});
+      } else {
+        // My AI automated reply to voice note
+        setTimeout(() => { showTypingIndicator('🤖'); }, 300);
+        setTimeout(() => {
+          hideTypingIndicator();
+          const replyTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+          conversations['myai'].push({
+            type: 'text',
+            sender: 'friend',
+            text: "Loved hearing your voice! 🎤🎧 Sounds crisp.",
+            time: replyTime,
+            sentAt: Date.now()
+          });
+          saveConversationsToStorage();
+          const currentActive = document.querySelector('.friend-chat-item.active');
+          if (currentActive && currentActive.dataset.chat === 'myai') {
+            renderConversation('myai');
+          }
+        }, 1200);
+      }
     });
 
     // Emoji Popover
@@ -6472,6 +7450,7 @@
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
+      const replyData = activeReplyTarget ? { ...activeReplyTarget } : null;
       if (!conversations[chatId]) conversations[chatId] = [];
       const newImgMsg = {
         type: 'image',
@@ -6480,9 +7459,11 @@
         text: 'Photo',
         time: timeStr,
         status: 'delivered',
-        sentAt: Date.now()
+        sentAt: Date.now(),
+        replyTo: replyData
       };
       conversations[chatId].push(newImgMsg);
+      dismissReplyBanner();
       saveConversationsToStorage();
       renderConversation(chatId);
       updateSidebarPreview(chatId);
@@ -6503,14 +7484,15 @@
                 senderUsername: currentUserSession?.username,
                 receiverId: friendUserId || friendHandle,
                 receiverUsername: friendHandle,
-                time: timeStr
+                time: timeStr,
+                replyTo: replyData
               }
             }).catch(e => console.warn('Realtime image broadcast error:', e));
           } catch (bErr) {}
         }
 
         // Persist to backend
-        const payloadStr = JSON.stringify({ type: 'image', image: imageDataUrl, text: 'Photo' });
+        const payloadStr = JSON.stringify({ type: 'image', image: imageDataUrl, text: 'Photo', replyTo: replyData });
         fetch('/api/messages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -6519,7 +7501,8 @@
             receiverId: friendUserId || friendHandle,
             text: payloadStr,
             type: 'image',
-            chatId: chatId
+            chatId: chatId,
+            replyTo: replyData
           })
         }).catch(() => {});
       } else {
@@ -7530,16 +8513,372 @@
       });
     }
 
-    const postTargets = {
-      profSpotlightBtn: 'Opening camera for Spotlight',
-      profStoryFriendsBtn: 'Opening camera for My Story (friends)',
-      profStoryPublicBtn: 'Opening camera for My Story (public)',
-      profNewStoryBtn: 'Create a new Story'
-    };
-    Object.keys(postTargets).forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('click', () => openCameraForPost(postTargets[id]));
+    // =========================================================
+    // 24-HOUR DISAPPEARING STORIES ENGINE (UPLOAD & VIEWER)
+    // =========================================================
+    const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+    let cachedStoriesList = [
+      {
+        id: 'story_demo_lo',
+        user_id: '106c7c59-8682-47ee-888b-5e0cfb75204d',
+        username: 'lo_writer',
+        fullName: 'LO (Novelist)',
+        avatar: '✍️',
+        media_url: 'assets/camera-home-bg.jpg',
+        media_type: 'image',
+        caption: 'Midnight chapters & cold coffee ☕✨',
+        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        expires_at: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString()
+      }
+    ];
+
+    const storyUploadModal = document.getElementById('storyUploadModal');
+    const closeStoryUploadBtn = document.getElementById('closeStoryUploadBtn');
+    const suPreviewStage = document.getElementById('suPreviewStage');
+    const suPreviewImg = document.getElementById('suPreviewImg');
+    const suPreviewPlaceholder = document.getElementById('suPreviewPlaceholder');
+    const suFileInput = document.getElementById('suFileInput');
+    const suCaptionInput = document.getElementById('suCaptionInput');
+    const suAudienceFriendsBtn = document.getElementById('suAudienceFriendsBtn');
+    const suAudiencePublicBtn = document.getElementById('suAudiencePublicBtn');
+    const suPostStoryBtn = document.getElementById('suPostStoryBtn');
+
+    let currentStoryMediaData = null;
+    let currentStoryMediaType = 'image';
+    let currentStoryAudience = 'friends';
+
+    function openStoryUploadModal(audience = 'friends') {
+      closeProfileMenu();
+      currentStoryAudience = audience;
+      currentStoryMediaData = null;
+      currentStoryMediaType = 'image';
+
+      if (suCaptionInput) suCaptionInput.value = '';
+      if (suPreviewImg) { suPreviewImg.src = ''; suPreviewImg.style.display = 'none'; }
+      if (suPreviewPlaceholder) suPreviewPlaceholder.style.display = 'flex';
+      if (suPreviewStage) suPreviewStage.classList.remove('has-media');
+
+      if (suAudienceFriendsBtn && suAudiencePublicBtn) {
+        suAudienceFriendsBtn.classList.toggle('active', audience === 'friends');
+        suAudiencePublicBtn.classList.toggle('active', audience === 'public');
+      }
+
+      if (storyUploadModal) storyUploadModal.classList.add('is-visible');
+    }
+
+    function closeStoryUploadModal() {
+      if (storyUploadModal) storyUploadModal.classList.remove('is-visible');
+      currentStoryMediaData = null;
+    }
+
+    if (closeStoryUploadBtn) closeStoryUploadBtn.addEventListener('click', closeStoryUploadModal);
+    if (storyUploadModal) {
+      storyUploadModal.addEventListener('click', (e) => {
+        if (e.target === storyUploadModal) closeStoryUploadModal();
+      });
+    }
+
+    if (suAudienceFriendsBtn && suAudiencePublicBtn) {
+      suAudienceFriendsBtn.addEventListener('click', () => {
+        currentStoryAudience = 'friends';
+        suAudienceFriendsBtn.classList.add('active');
+        suAudiencePublicBtn.classList.remove('active');
+      });
+      suAudiencePublicBtn.addEventListener('click', () => {
+        currentStoryAudience = 'public';
+        suAudiencePublicBtn.classList.add('active');
+        suAudienceFriendsBtn.classList.remove('active');
+      });
+    }
+
+    if (suPreviewStage && suFileInput) {
+      suPreviewStage.addEventListener('click', () => suFileInput.click());
+
+      suFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const isVideo = file.type.startsWith('video');
+        currentStoryMediaType = isVideo ? 'video' : 'image';
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const rawData = ev.target.result;
+          if (isVideo) {
+            currentStoryMediaData = rawData;
+            suPreviewPlaceholder.innerHTML = `<span style="font-size:36px;">🎥</span><span>Video selected: ${file.name}</span>`;
+          } else {
+            // Compress image to max 1080px for instant upload
+            compressChatImage(rawData, 1080, 0.75, (compressed) => {
+              currentStoryMediaData = compressed;
+              if (suPreviewImg) {
+                suPreviewImg.src = compressed;
+                suPreviewImg.style.display = 'block';
+              }
+              if (suPreviewPlaceholder) suPreviewPlaceholder.style.display = 'none';
+              if (suPreviewStage) suPreviewStage.classList.add('has-media');
+            });
+          }
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+      });
+    }
+
+    if (suPostStoryBtn) {
+      suPostStoryBtn.addEventListener('click', async () => {
+        if (!currentStoryMediaData) {
+          showSnapToast("Please select a photo or video for your story!");
+          return;
+        }
+
+        const user = currentUserSession || { id: 'guest', username: 'guest', fullName: 'Snapchat User', avatar: '👻' };
+        const caption = suCaptionInput ? suCaptionInput.value.trim() : '';
+        const now = Date.now();
+        const createdAt = new Date(now).toISOString();
+        const expiresAt = new Date(now + TWENTY_FOUR_HOURS_MS).toISOString();
+        const storyId = `story_${now}_${Math.random().toString(36).substr(2, 6)}`;
+
+        suPostStoryBtn.disabled = true;
+        suPostStoryBtn.textContent = 'Posting to Story...';
+
+        const storyPayload = {
+          id: storyId,
+          userId: user.id,
+          username: user.username,
+          fullName: user.fullName || user.username,
+          avatar: user.avatar || '👤',
+          mediaUrl: currentStoryMediaData,
+          mediaType: currentStoryMediaType,
+          caption: caption,
+          audience: currentStoryAudience,
+          createdAt: createdAt,
+          expiresAt: expiresAt
+        };
+
+        // 1. Post to backend serverless API
+        try {
+          fetch('/api/stories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(storyPayload)
+          }).catch(() => {});
+        } catch (_) {}
+
+        // 2. Direct Supabase storage & table insert if client available
+        if (supabaseClient) {
+          try {
+            supabaseClient
+              .from('stories')
+              .insert([{
+                id: storyId,
+                user_id: user.id,
+                username: user.username,
+                full_name: user.fullName || user.username,
+                avatar: user.avatar || '👤',
+                media_url: currentStoryMediaData,
+                media_type: currentStoryMediaType,
+                caption: caption,
+                audience: currentStoryAudience,
+                created_at: createdAt,
+                expires_at: expiresAt
+              }])
+              .then(() => {})
+              .catch(() => {});
+          } catch (_) {}
+        }
+
+        // Add to local cache immediately (0ms delay)
+        cachedStoriesList.unshift({
+          id: storyId,
+          user_id: user.id,
+          username: user.username,
+          fullName: user.fullName || user.username,
+          avatar: user.avatar || '👤',
+          media_url: currentStoryMediaData,
+          media_type: currentStoryMediaType,
+          caption: caption,
+          audience: currentStoryAudience,
+          created_at: createdAt,
+          expires_at: expiresAt
+        });
+
+        suPostStoryBtn.disabled = false;
+        suPostStoryBtn.textContent = 'Post to Story 🚀';
+        closeStoryUploadModal();
+        renderStoriesTray();
+        showSnapToast("Story posted! Disappears automatically in 24 hours 📸✨");
+      });
+    }
+
+    // --- FULLSCREEN STORY REEL VIEWER ENGINE ---
+    const storyViewerModal = document.getElementById('storyViewerModal');
+    const closeStoryViewerBtn = document.getElementById('closeStoryViewerBtn');
+    const svAuthorAv = document.getElementById('svAuthorAv');
+    const svAuthorName = document.getElementById('svAuthorName');
+    const svStoryTime = document.getElementById('svStoryTime');
+    const svImageElement = document.getElementById('svImageElement');
+    const svVideoElement = document.getElementById('svVideoElement');
+    const svCaptionBanner = document.getElementById('svCaptionBanner');
+    const svProgressFill = document.getElementById('svProgressFill');
+
+    let storyReelInterval = null;
+
+    function openStoryViewer(story) {
+      if (!story) return;
+      if (svAuthorAv) svAuthorAv.textContent = story.avatar || '👤';
+      if (svAuthorName) svAuthorName.textContent = story.fullName || story.username || 'Snapchat Friend';
+      if (svStoryTime) svStoryTime.textContent = formatStoryTimeAgo(story.created_at || story.createdAt);
+
+      if (story.media_type === 'video' || (story.media_url && story.media_url.startsWith('data:video'))) {
+        if (svImageElement) svImageElement.style.display = 'none';
+        if (svVideoElement) {
+          svVideoElement.src = story.media_url;
+          svVideoElement.style.display = 'block';
+          svVideoElement.play().catch(() => {});
+        }
+      } else {
+        if (svVideoElement) { svVideoElement.pause(); svVideoElement.style.display = 'none'; }
+        if (svImageElement) {
+          svImageElement.src = story.media_url || story.mediaUrl || '';
+          svImageElement.style.display = 'block';
+        }
+      }
+
+      if (svCaptionBanner) {
+        if (story.caption) {
+          svCaptionBanner.textContent = story.caption;
+          svCaptionBanner.style.display = 'block';
+        } else {
+          svCaptionBanner.style.display = 'none';
+        }
+      }
+
+      if (storyViewerModal) storyViewerModal.classList.add('active');
+
+      // 5-second animated progress bar
+      if (svProgressFill) svProgressFill.style.width = '0%';
+      let elapsedMs = 0;
+      const totalDurationMs = 5000;
+      clearInterval(storyReelInterval);
+
+      storyReelInterval = setInterval(() => {
+        elapsedMs += 50;
+        const pct = Math.min(100, (elapsedMs / totalDurationMs) * 100);
+        if (svProgressFill) svProgressFill.style.width = `${pct}%`;
+
+        if (elapsedMs >= totalDurationMs) {
+          clearInterval(storyReelInterval);
+          closeStoryViewer();
+        }
+      }, 50);
+    }
+
+    function closeStoryViewer() {
+      clearInterval(storyReelInterval);
+      if (svVideoElement) {
+        try { svVideoElement.pause(); } catch (_) {}
+      }
+      if (storyViewerModal) storyViewerModal.classList.remove('active');
+    }
+
+    if (closeStoryViewerBtn) closeStoryViewerBtn.addEventListener('click', closeStoryViewer);
+    if (storyViewerModal) {
+      storyViewerModal.addEventListener('click', (e) => {
+        if (e.target === storyViewerModal || e.target.classList.contains('sv-media-stage')) {
+          closeStoryViewer();
+        }
+      });
+    }
+
+    function formatStoryTimeAgo(isoString) {
+      const timeMs = Date.parse(isoString || '');
+      if (!timeMs) return 'Just now';
+      const diffMs = Math.max(0, Date.now() - timeMs);
+      const mins = Math.floor(diffMs / 60000);
+      if (mins < 60) return `${Math.max(1, mins)}m ago`;
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return `${hours}h ago`;
+      return '1d ago';
+    }
+
+    // Render active (unexpired) stories in the stories tray
+    function renderStoriesTray() {
+      const tray = document.getElementById('storiesTray');
+      if (!tray) return;
+
+      // Filter out stories older than 24 hours
+      const nowMs = Date.now();
+      const activeStories = cachedStoriesList.filter(s => {
+        const exp = s.expires_at ? Date.parse(s.expires_at) : (Date.parse(s.created_at) + TWENTY_FOUR_HOURS_MS);
+        return exp > nowMs;
+      });
+
+      // Keep the permanent "+ Add Story" button as the first item
+      tray.innerHTML = `
+        <div class="story-bubble-item" id="addStoryTrayBtn" title="Add to Story">
+          <div class="story-ring-wrap" style="border: 2px dashed #0084FF; cursor:pointer;">
+            <div class="story-inner-circle" style="background: #E0F2FE; color: #0084FF; font-size: 20px; font-weight: 800;">
+              +
+            </div>
+          </div>
+          <div class="story-name-label">Add Story</div>
+        </div>
+      `;
+
+      const addBtn = document.getElementById('addStoryTrayBtn');
+      if (addBtn) addBtn.addEventListener('click', () => openStoryUploadModal('friends'));
+
+      // Render each active story ring
+      activeStories.forEach(st => {
+        const item = document.createElement('div');
+        item.className = 'story-bubble-item';
+        item.title = `View @${st.username}'s Story`;
+        item.innerHTML = `
+          <div class="story-ring-wrap" style="border: 2.5px solid #9B51E0; padding: 2px; cursor: pointer;">
+            <div class="story-inner-circle" style="background: #18181C; font-size: 18px; display: flex; align-items: center; justify-content: center;">
+              ${st.avatar || '👤'}
+            </div>
+          </div>
+          <div class="story-name-label">${escapeHtml(st.fullName || st.username || 'Story')}</div>
+        `;
+
+        item.addEventListener('click', () => openStoryViewer(st));
+        tray.appendChild(item);
+      });
+    }
+
+    // Fetch active stories from backend and Supabase
+    async function loadActiveStories() {
+      try {
+        const res = await fetch('/api/stories');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.stories) && data.stories.length > 0) {
+            cachedStoriesList = data.stories;
+          }
+        }
+      } catch (_) {}
+      renderStoriesTray();
+    }
+
+    loadActiveStories();
+    setInterval(renderStoriesTray, 30000); // 24-hour expiration auto-purge interval
+
+    // Wire profile buttons to Story upload modal
+    const profNewStoryBtn = document.getElementById('profNewStoryBtn');
+    if (profNewStoryBtn) profNewStoryBtn.addEventListener('click', () => openStoryUploadModal('friends'));
+
+    const profStoryFriendsBtn = document.getElementById('profStoryFriendsBtn');
+    if (profStoryFriendsBtn) profStoryFriendsBtn.addEventListener('click', () => openStoryUploadModal('friends'));
+
+    const profStoryPublicBtn = document.getElementById('profStoryPublicBtn');
+    if (profStoryPublicBtn) profStoryPublicBtn.addEventListener('click', () => openStoryUploadModal('public'));
+
+    const profSpotlightBtn = document.getElementById('profSpotlightBtn');
+    if (profSpotlightBtn) profSpotlightBtn.addEventListener('click', () => {
+      closeProfileMenu();
+      if (typeof openSpotlight === 'function') openSpotlight();
     });
 
     const profAddFriendsRow = document.getElementById('profAddFriendsRow');
