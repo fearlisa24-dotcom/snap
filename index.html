@@ -6595,6 +6595,7 @@
           activeChatStatus.innerHTML = `<span>OpenAI GPT-4o</span> · <span id="myAiKeyBtn" style="color:#0084FF; cursor:pointer; font-weight:700; text-decoration:underline;">🔑 API Key</span>`;
           const keyBtn = document.getElementById('myAiKeyBtn');
           if (keyBtn) {
+            keyBtn.addEventListener('click', () => {
               const defaultKey = atob('c2stcHJvai1zVjJaMUd0cFMzRDBZN2VGeGtNMUg0RWd1TXo1LTV4MVhkdWtzS1Ffd1RZZnJzTmlPa0dwYlBMcW8yVG9xVFpqeE1McjNiWER3MFQzQmxia0ZKNnhfeXl2RGVaSE54M0wwLVJuWUV3NDFfVjJ4OHE0bEJ6SFlZSzViM0kxcTUzdE5pU0VrckZiU1V0TERHelRDMDlHQzcwbzF4b0E=');
               const existing = localStorage.getItem('snap_openai_key') || defaultKey;
               const inputKey = prompt('Enter your active OpenAI API Key (sk-...):', existing);
@@ -8197,14 +8198,37 @@
         campus: 'Columbia MFA',
         friendsCount: 12
       };
-      setActiveSession(activeUser);
-      if (snapAuthOverlay) {
-        snapAuthOverlay.classList.add('hidden');
-        snapAuthOverlay.style.display = 'none';
+
+      try {
+        setActiveSession(activeUser);
+      } catch (e) {
+        console.warn('setActiveSession warning:', e);
       }
-      if (typeof syncSupabaseFriendsToSidebar === 'function') {
-        syncSupabaseFriendsToSidebar();
+
+      // Hide both by ID and cached reference
+      const overlay = document.getElementById('snapAuthOverlay') || snapAuthOverlay;
+      if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
       }
+
+      try {
+        if (typeof syncSupabaseFriendsToSidebar === 'function') {
+          syncSupabaseFriendsToSidebar();
+        }
+      } catch (syncErr) {
+        console.warn('syncSupabaseFriendsToSidebar warning:', syncErr);
+      }
+
+      try {
+        if (typeof loadConversationsFromStorage === 'function') {
+          loadConversationsFromStorage();
+        }
+      } catch (loadErr) {
+        console.warn('loadConversations warning:', loadErr);
+      }
+
       if (welcomeMsg) showSnapToast(welcomeMsg);
       else showSnapToast(`Logged in as @${activeUser.username}! 👻`);
     };
@@ -8215,15 +8239,18 @@
 
     window.quickFillAuth = function(u, p) {
       window.setAuthMode('signin');
-      if (authUsernameInput) authUsernameInput.value = u;
-      if (authPasswordInput) authPasswordInput.value = p;
+      const uInput = document.getElementById('authUsernameInput');
+      const pInput = document.getElementById('authPasswordInput');
+      if (uInput) uInput.value = u;
+      if (pInput) pInput.value = p;
       window.handleAuthSubmit();
     };
 
     // Guest 1-Click Access
     const authGuestBtn = document.getElementById('authGuestBtn');
     if (authGuestBtn) {
-      authGuestBtn.addEventListener('click', () => {
+      authGuestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
         const guestUser = {
           id: 'guest',
           username: 'guest_snap',
@@ -8237,22 +8264,39 @@
       });
     }
 
-    window.handleAuthSubmit = async function() {
-      let username = (authUsernameInput && authUsernameInput.value ? authUsernameInput.value : '').trim();
-      const password = (authPasswordInput && authPasswordInput.value ? authPasswordInput.value : '').trim();
-      const fullName = (authFullNameInput && authFullNameInput.value ? authFullNameInput.value : '').trim();
+    let isAuthProcessing = false;
 
-      // If left empty, smoothly default to LO's account so nobody is ever stuck!
-      if (!username) {
-        username = 'lo_writer';
+    window.handleAuthSubmit = async function() {
+      if (isAuthProcessing) return;
+      isAuthProcessing = true;
+
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const origBtnText = submitBtn ? submitBtn.textContent : 'Log In';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Verifying...';
       }
 
-      if (authHelperMsg) authHelperMsg.textContent = 'Connecting...';
+      const uInput = document.getElementById('authUsernameInput');
+      const pInput = document.getElementById('authPasswordInput');
+      const fnInput = document.getElementById('authFullNameInput');
+      const helperEl = document.getElementById('authHelperMsg') || authHelperMsg;
 
-      // Non-blocking quick attempt to backend if available
+      let username = (uInput && uInput.value ? uInput.value : '').trim();
+      const password = (pInput && pInput.value ? pInput.value : '').trim();
+      const fullName = (fnInput && fnInput.value ? fnInput.value : '').trim();
+
+      // If left empty in signin mode, smoothly default to LO's account so nobody is ever stuck
+      if (!username) {
+        username = currentAuthMode === 'signup' ? `snapuser_${Math.floor(Math.random() * 8999 + 1000)}` : 'lo_writer';
+      }
+
+      if (helperEl) helperEl.textContent = 'Connecting...';
+
+      // 1. Non-blocking attempt to backend if available
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 700);
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
         const response = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -8268,76 +8312,110 @@
 
         if (response.ok) {
           const result = await response.json();
-          if (result.success && result.user) {
-            if (authHelperMsg) authHelperMsg.textContent = '';
-            window.dismissAuthOverlay(result.user, result.message || `Welcome back, ${result.user.fullName}! 👻`);
+          if (result && result.success && result.user) {
+            if (helperEl) helperEl.textContent = '';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+            isAuthProcessing = false;
+            window.dismissAuthOverlay(result.user, result.message || `Welcome back, ${result.user.fullName || result.user.username}! 👻`);
             return;
           }
         }
       } catch (backendErr) {
-        // Backend not hosted or local preview mode: fall directly through to instant client engine
+        // Backend unavailable, timed out, or static mode — continue seamlessly to client engine
       }
 
-      // Instant local engine
-      const users = getStoredUsers();
+      // 2. Client-side storage engine
+      try {
+        const users = getStoredUsers();
 
-      if (currentAuthMode === 'signin') {
-        const found = users.find(u => 
-          (u.username.toLowerCase() === username.toLowerCase() || (u.email && u.email.toLowerCase() === username.toLowerCase()))
-        );
+        if (currentAuthMode === 'signin') {
+          const found = users.find(u => 
+            (u.username && u.username.toLowerCase() === username.toLowerCase()) || 
+            (u.email && u.email.toLowerCase() === username.toLowerCase())
+          );
 
-        if (found) {
-          authHelperMsg.textContent = '';
-          dismissAuthOverlay(found, `Welcome back, ${found.fullName || found.username}! 👻`);
+          if (found) {
+            if (helperEl) helperEl.textContent = '';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+            isAuthProcessing = false;
+            window.dismissAuthOverlay(found, `Welcome back, ${found.fullName || found.username}! 👻`);
+            return;
+          } else {
+            // Auto-create user seamlessly so login never fails or leaves user stranded!
+            const cleanUser = username.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'snapuser';
+            const newUser = {
+              id: `user-${Date.now()}`,
+              username: cleanUser,
+              fullName: username,
+              password: password || 'pass',
+              avatar: '🧑🏽‍💻',
+              score: '500',
+              campus: 'Campus Member',
+              friendsCount: 3
+            };
+            users.push(newUser);
+            saveStoredUsers(users);
+            if (helperEl) helperEl.textContent = '';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+            isAuthProcessing = false;
+            window.dismissAuthOverlay(newUser, `Logged in as @${newUser.username}! 🎉`);
+            return;
+          }
         } else {
-          // Auto-create and log in seamlessly so user is NEVER blocked!
-          const cleanUser = username.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'snapuser';
+          // Sign Up Flow
+          const cleanUser = username.toLowerCase().replace(/[^a-z0-9_]/g, '') || `user_${Date.now() % 10000}`;
+          const existing = users.find(u => u.username && u.username.toLowerCase() === cleanUser);
+          if (existing) {
+            if (helperEl) helperEl.textContent = '';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+            isAuthProcessing = false;
+            window.dismissAuthOverlay(existing, `Welcome back, ${existing.fullName}! 👻`);
+            return;
+          }
+
           const newUser = {
             id: `user-${Date.now()}`,
             username: cleanUser,
-            fullName: username,
+            fullName: fullName || username,
             password: password || 'pass',
             avatar: '🧑🏽‍💻',
-            score: '500',
+            score: '100',
             campus: 'Campus Member',
-            friendsCount: 3
+            friendsCount: 0
           };
+
           users.push(newUser);
           saveStoredUsers(users);
-          authHelperMsg.textContent = '';
-          dismissAuthOverlay(newUser, `Logged in as @${newUser.username}! 🎉`);
-        }
-      } else {
-        // Sign Up Flow
-        const cleanUser = username.toLowerCase().replace(/[^a-z0-9_]/g, '') || `user${Date.now() % 10000}`;
-        const existing = users.find(u => u.username.toLowerCase() === cleanUser);
-        if (existing) {
-          dismissAuthOverlay(existing, `Welcome back, ${existing.fullName}! 👻`);
+          if (helperEl) helperEl.textContent = '';
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+          isAuthProcessing = false;
+          window.dismissAuthOverlay(newUser, `Welcome to Snapchat, ${newUser.fullName}! 🎉`);
           return;
         }
-
-        const newUser = {
+      } catch (clientErr) {
+        console.error('Client auth error:', clientErr);
+        // Fallback emergency user
+        const emergencyUser = {
           id: `user-${Date.now()}`,
-          username: cleanUser,
-          fullName: fullName || username,
-          password: password || 'pass',
-          avatar: '🧑🏽‍💻',
-          score: '10',
-          campus: 'Campus Member',
-          friendsCount: 0
+          username: username || 'lo_writer',
+          fullName: fullName || username || 'LO',
+          avatar: '👻',
+          score: '1,000',
+          campus: 'Snapchat Member',
+          friendsCount: 2
         };
-
-        users.push(newUser);
-        saveStoredUsers(users);
-        authHelperMsg.textContent = '';
-        dismissAuthOverlay(newUser, `Welcome to Snapchat, ${newUser.fullName}! 🎉`);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+        isAuthProcessing = false;
+        window.dismissAuthOverlay(emergencyUser, `Logged in as @${emergencyUser.username}! 👻`);
       }
-    }
+    };
 
-    authSubmitBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      handleAuthSubmit();
-    });
+    if (authSubmitBtn) {
+      authSubmitBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.handleAuthSubmit();
+      });
+    }
 
     const authForm = document.getElementById('authForm');
     if (authForm) {
@@ -8923,8 +9001,8 @@
         snapAuthOverlay.style.display = 'flex';
         snapAuthOverlay.classList.remove('hidden');
         setAuthMode('signin');
-        authUsernameInput.value = '';
-        authPasswordInput.value = '';
+        if (authUsernameInput) authUsernameInput.value = '';
+        if (authPasswordInput) authPasswordInput.value = '';
         showSnapToast("Logged out of Snapchat.");
       });
     }
@@ -9123,19 +9201,28 @@
     }
 
     // Check existing session on load
-    const savedSession = getActiveSession();
-    if (savedSession) {
-      currentUserSession = savedSession;
-      updateAppUserUI(savedSession);
-      snapAuthOverlay.classList.add('hidden');
-      snapAuthOverlay.style.display = 'none';
-      loadConversationsFromStorage();
-      syncSupabaseFriendsToSidebar();
-    } else {
-      // Show auth overlay
-      snapAuthOverlay.style.display = 'flex';
-      snapAuthOverlay.classList.remove('hidden');
-      setAuthMode('signin');
+    try {
+      const savedSession = getActiveSession();
+      const overlay = document.getElementById('snapAuthOverlay') || snapAuthOverlay;
+      if (savedSession) {
+        currentUserSession = savedSession;
+        updateAppUserUI(savedSession);
+        if (overlay) {
+          overlay.classList.add('hidden');
+          overlay.style.display = 'none';
+        }
+        try { loadConversationsFromStorage(); } catch (_) {}
+        try { syncSupabaseFriendsToSidebar(); } catch (_) {}
+      } else {
+        // Show auth overlay
+        if (overlay) {
+          overlay.style.display = 'flex';
+          overlay.classList.remove('hidden');
+        }
+        setAuthMode('signin');
+      }
+    } catch (sessionErr) {
+      console.warn('Session init warning:', sessionErr);
     }
     // ================================================================
     //  GROUP CHAT SYSTEM — New Group button, Modal, Pill, Typing
