@@ -8683,38 +8683,16 @@
     // =========================================================
     // AUTHENTICATION FLOW: BACKEND / CLIENT STORE
     // =========================================================
-    const DEFAULT_USERS = [
-      {
-        id: 'emmanuel',
-        username: 'emmanuel',
-        fullName: 'Emmanuel Adeyemi',
-        password: 'password123',
-        avatar: '🧑🏾‍💼',
-        score: '48,920',
-        campus: 'Georgia Tech',
-        friendsCount: 124
-      },
-      {
-        id: 'lo_writer',
-        username: 'lo_writer',
-        fullName: 'LO (Novelist)',
-        password: 'taboo123',
-        avatar: '✍️',
-        score: '99,410',
-        campus: 'Columbia MFA',
-        friendsCount: 312
-      },
-      {
-        id: 'sarah_m',
-        username: 'sarah_m',
-        fullName: 'Sarah Miller',
-        password: 'password123',
-        avatar: '👩🏼',
-        score: '12,300',
-        campus: 'NYU Stern',
-        friendsCount: 88
+    const DEFAULT_USERS = [];
+
+    // One-time purge of legacy test accounts from client localStorage
+    try {
+      if (localStorage.getItem('snap_accounts_purged_v2') !== 'true') {
+        localStorage.removeItem('snap_registered_users');
+        localStorage.removeItem('snap_active_session');
+        localStorage.setItem('snap_accounts_purged_v2', 'true');
       }
-    ];
+    } catch (e) {}
 
     // Load registered users from localStorage or fallback
     function getStoredUsers() {
@@ -8892,9 +8870,12 @@
       const password = (pInput && pInput.value ? pInput.value : '').trim();
       const fullName = (fnInput && fnInput.value ? fnInput.value : '').trim();
 
-      // If left empty in signin mode, smoothly default to LO's account so nobody is ever stuck
+      // Require explicit username
       if (!username) {
-        username = currentAuthMode === 'signup' ? `snapuser_${Math.floor(Math.random() * 8999 + 1000)}` : 'lo_writer';
+        if (helperEl) helperEl.textContent = 'Please enter your username.';
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+        isAuthProcessing = false;
+        return;
       }
 
       if (helperEl) helperEl.textContent = 'Connecting...';
@@ -8902,7 +8883,7 @@
       // 1. Non-blocking attempt to backend if available
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
         const response = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -8916,18 +8897,22 @@
         });
         clearTimeout(timeoutId);
 
-        if (response.ok) {
-          const result = await response.json();
-          if (result && result.success && result.user) {
-            if (helperEl) helperEl.textContent = '';
-            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
-            isAuthProcessing = false;
-            window.dismissAuthOverlay(result.user, result.message || `Welcome back, ${result.user.fullName || result.user.username}! 👻`);
-            return;
-          }
+        const result = await response.json();
+        if (response.ok && result && result.success && result.user) {
+          if (helperEl) helperEl.textContent = '';
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+          isAuthProcessing = false;
+          window.dismissAuthOverlay(result.user, result.message || `Welcome back, ${result.user.fullName || result.user.username}! 👻`);
+          return;
+        } else if (!response.ok && currentAuthMode === 'signin') {
+          // Backend explicitly rejected or account not found
+          if (helperEl) helperEl.textContent = result.error || "Account not found. Please click 'Sign Up' to create your account.";
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
+          isAuthProcessing = false;
+          return;
         }
       } catch (backendErr) {
-        // Backend unavailable, timed out, or static mode — continue seamlessly to client engine
+        // Backend unavailable, timed out, or static mode — continue to client engine
       }
 
       // 2. Client-side storage engine
@@ -8947,24 +8932,10 @@
             window.dismissAuthOverlay(found, `Welcome back, ${found.fullName || found.username}! 👻`);
             return;
           } else {
-            // Auto-create user seamlessly so login never fails or leaves user stranded!
-            const cleanUser = username.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'snapuser';
-            const newUser = {
-              id: `user-${Date.now()}`,
-              username: cleanUser,
-              fullName: username,
-              password: password || 'pass',
-              avatar: '🧑🏽‍💻',
-              score: '500',
-              campus: 'Campus Member',
-              friendsCount: 3
-            };
-            users.push(newUser);
-            saveStoredUsers(users);
-            if (helperEl) helperEl.textContent = '';
+            // Account was deleted or doesn't exist — strictly do NOT log in!
+            if (helperEl) helperEl.textContent = "Account not found. Please click 'Sign Up' to create an account.";
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
             isAuthProcessing = false;
-            window.dismissAuthOverlay(newUser, `Logged in as @${newUser.username}! 🎉`);
             return;
           }
         } else {
@@ -9000,19 +8971,9 @@
         }
       } catch (clientErr) {
         console.error('Client auth error:', clientErr);
-        // Fallback emergency user
-        const emergencyUser = {
-          id: `user-${Date.now()}`,
-          username: username || 'lo_writer',
-          fullName: fullName || username || 'LO',
-          avatar: '👻',
-          score: '1,000',
-          campus: 'Snapchat Member',
-          friendsCount: 2
-        };
+        if (helperEl) helperEl.textContent = 'Auth error. Please click Sign Up.';
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
         isAuthProcessing = false;
-        window.dismissAuthOverlay(emergencyUser, `Logged in as @${emergencyUser.username}! 👻`);
       }
     };
 

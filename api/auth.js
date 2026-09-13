@@ -55,36 +55,20 @@ module.exports = async (req, res) => {
         targetUser = allUsers.find(u => u.email.toLowerCase() === identifier.toLowerCase());
       }
 
+      if (!targetUser) {
+        return res.status(404).json({
+          success: false,
+          error: "Account not found. Please click 'Sign Up' to create your account."
+        });
+      }
+
       let { data: authData, error: authError } = await supabasePublic.auth.signInWithPassword({ email, password });
 
       if (authError) {
-        if (targetUser) {
-          await supabaseAdmin.auth.admin.updateUserById(targetUser.id, { password });
-          const retry = await supabasePublic.auth.signInWithPassword({ email, password });
-          authData = retry.data;
-          authError = retry.error;
-        } else {
-          const cleanUser = identifier.toLowerCase().replace(/[^a-z0-9_]/g, "") || ("user_" + (Date.now() % 1000));
-          const createRes = await supabaseAdmin.auth.admin.createUser({
-            email,
-            password,
-            email_confirm: true,
-            user_metadata: {
-              username: cleanUser,
-              full_name: body.fullName || cleanUser,
-              avatar: "🧑🏽‍💻",
-              score: "500",
-              campus: "Real Snapchat User",
-              friends: []
-            }
-          });
-          if (createRes.data?.user) {
-            targetUser = createRes.data.user;
-            const retry = await supabasePublic.auth.signInWithPassword({ email, password });
-            authData = retry.data;
-            authError = null;
-          }
-        }
+        await supabaseAdmin.auth.admin.updateUserById(targetUser.id, { password });
+        const retry = await supabasePublic.auth.signInWithPassword({ email, password });
+        authData = retry.data;
+        authError = retry.error;
       }
 
       const activeUser = authData?.user || targetUser;
