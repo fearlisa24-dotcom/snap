@@ -1073,7 +1073,7 @@
       border: 0;
       pointer-events: none;
       transform: translate(-50%, -50%);
-      z-index: 0;
+      z-index: 2;
     }
     .spotlight-card-shade {
       position: absolute;
@@ -2412,6 +2412,102 @@
       text-align: center;
       line-height: 1.35;
       display: none;
+    }
+
+    /* ========================================================= */
+    /* STORY VIEWER ANALYTICS PANEL                              */
+    /* ========================================================= */
+    .sv-analytics-panel {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      width: 90%;
+      max-width: 400px;
+    }
+    .sv-analytics-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 28px;
+      padding: 10px 20px;
+      color: #FFF;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: auto;
+    }
+    .sv-analytics-toggle:hover { background: rgba(0, 0, 0, 0.75); }
+    .sv-analytics-eye { font-size: 16px; }
+    .sv-analytics-count { font-size: 15px; font-weight: 800; }
+    .sv-analytics-arrow {
+      font-size: 10px;
+      transition: transform 0.2s;
+      opacity: 0.7;
+    }
+    .sv-analytics-arrow.open { transform: rotate(180deg); }
+    .sv-viewers-list {
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(16px);
+      border-radius: 18px;
+      margin-top: 6px;
+      padding: 10px 14px;
+      width: 100%;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sv-viewers-list::-webkit-scrollbar { width: 4px; }
+    .sv-viewers-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+    .sv-viewer-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .sv-viewer-row:last-child { border-bottom: none; }
+    .sv-viewer-av {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .sv-viewer-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .sv-viewer-name {
+      color: #FFF;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sv-viewer-time {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+    }
+    .sv-viewers-empty {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 12.5px;
+      text-align: center;
+      padding: 12px 0;
     }
 
     /* ========================================================= */
@@ -4009,8 +4105,6 @@
           </div>
 
           <div class="chat-header-right">
-            <button class="chat-header-btn" title="Start Call">📞</button>
-            <button class="chat-header-btn" title="Video Snap">📹</button>
             <button class="chat-header-btn" title="More Options">⋮</button>
           </div>
         </div>
@@ -4237,6 +4331,16 @@
           <img id="svImageElement" class="sv-media-element" style="display:none;" />
           <video id="svVideoElement" class="sv-media-element" style="display:none;" playsinline></video>
           <div class="sv-caption-banner" id="svCaptionBanner"></div>
+        </div>
+
+        <!-- Story Viewer Analytics Panel (visible to story creator only) -->
+        <div class="sv-analytics-panel" id="svAnalyticsPanel" style="display:none;">
+          <button type="button" class="sv-analytics-toggle" id="svAnalyticsToggle">
+            <span class="sv-analytics-eye">👁️</span>
+            <span class="sv-analytics-count" id="svViewCount">0</span>
+            <span class="sv-analytics-arrow" id="svAnalyticsArrow">▲</span>
+          </button>
+          <div class="sv-viewers-list" id="svViewersList" style="display:none;"></div>
         </div>
       </div>
 
@@ -8863,6 +8967,123 @@
           closeStoryViewer();
         }
       }, 50);
+
+      // ---- Story Viewer Analytics ----
+      const svAnalyticsPanel = document.getElementById('svAnalyticsPanel');
+      const svViewCount = document.getElementById('svViewCount');
+      const svViewersList = document.getElementById('svViewersList');
+      const svAnalyticsToggle = document.getElementById('svAnalyticsToggle');
+      const svAnalyticsArrow = document.getElementById('svAnalyticsArrow');
+      const storyUserId = story.user_id || story.userId || '';
+      const currentUserId = currentUserSession?.id || currentUserSession?.username || '';
+      const isMyStory = storyUserId && currentUserId &&
+        (storyUserId === currentUserId || story.username === currentUserSession?.username);
+
+      // Track current user's view (don't track if viewing own story)
+      if (!isMyStory && story.id) {
+        const user = currentUserSession || {};
+        const viewPayload = {
+          action: 'view',
+          story_id: story.id,
+          user_id: user.id || user.username || 'guest',
+          username: user.username || 'guest_snap',
+          fullName: user.fullName || user.username || 'Guest',
+          avatar: user.avatar || '👤'
+        };
+        try {
+          fetch('/api/stories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(viewPayload)
+          }).catch(() => {});
+        } catch (_) {}
+        // Also track directly via Supabase client
+        if (supabaseClient && story.id) {
+          try {
+            supabaseClient.from('story_views').insert([{
+              id: `view_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+              story_id: story.id,
+              user_id: viewPayload.user_id,
+              username: viewPayload.username,
+              full_name: viewPayload.fullName,
+              avatar: viewPayload.avatar,
+              viewed_at: new Date().toISOString()
+            }]).then(() => {}).catch(() => {});
+          } catch (_) {}
+        }
+      }
+
+      // Show analytics panel only to story creator
+      if (svAnalyticsPanel) {
+        if (isMyStory) {
+          svAnalyticsPanel.style.display = 'flex';
+          if (svViewersList) svViewersList.style.display = 'none';
+          if (svAnalyticsArrow) svAnalyticsArrow.classList.remove('open');
+
+          // Fetch viewer list
+          async function loadStoryViewers() {
+            let viewers = [];
+            let count = 0;
+
+            // Try backend API
+            try {
+              const res = await fetch(`/api/stories?action=views&story_id=${encodeURIComponent(story.id)}`);
+              if (res.ok) {
+                const data = await res.json();
+                if (data.success && Array.isArray(data.viewers)) {
+                  viewers = data.viewers;
+                  count = data.count || viewers.length;
+                }
+              }
+            } catch (_) {}
+
+            // Also try direct Supabase query
+            if (viewers.length === 0 && supabaseClient) {
+              try {
+                const { data: dbViews } = await supabaseClient
+                  .from('story_views')
+                  .select('*')
+                  .eq('story_id', story.id)
+                  .order('viewed_at', { ascending: false });
+                if (dbViews && dbViews.length > 0) {
+                  viewers = dbViews;
+                  count = dbViews.length;
+                }
+              } catch (_) {}
+            }
+
+            if (svViewCount) svViewCount.textContent = count;
+
+            if (svViewersList) {
+              if (viewers.length === 0) {
+                svViewersList.innerHTML = '<div class="sv-viewers-empty">No views yet — share your story!</div>';
+              } else {
+                svViewersList.innerHTML = viewers.map(v => `
+                  <div class="sv-viewer-row">
+                    <div class="sv-viewer-av">${escapeHtml(v.avatar || '👤')}</div>
+                    <div class="sv-viewer-info">
+                      <div class="sv-viewer-name">${escapeHtml(v.full_name || v.fullName || v.username || 'Snapchatter')}</div>
+                      <div class="sv-viewer-time">${formatStoryTimeAgo(v.viewed_at)}</div>
+                    </div>
+                  </div>
+                `).join('');
+              }
+            }
+          }
+          loadStoryViewers();
+
+          // Wire up toggle
+          if (svAnalyticsToggle) {
+            svAnalyticsToggle.onclick = () => {
+              const isOpen = svViewersList && svViewersList.style.display !== 'none';
+              if (svViewersList) svViewersList.style.display = isOpen ? 'none' : 'block';
+              if (svAnalyticsArrow) svAnalyticsArrow.classList.toggle('open', !isOpen);
+            };
+          }
+        } else {
+          svAnalyticsPanel.style.display = 'none';
+        }
+      }
     }
 
     function closeStoryViewer() {
