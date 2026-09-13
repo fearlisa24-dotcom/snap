@@ -3908,6 +3908,165 @@
       0%,80%,100% { opacity: 0.3; transform: scale(0.85); }
       40% { opacity: 1; transform: scale(1.1); }
     }
+
+    /* ===== MESSAGE HOLD ACTIONS & EDITING ===== */
+    .chat-msg-entry {
+      position: relative;
+      user-select: text;
+      -webkit-user-select: text;
+      touch-action: manipulation;
+    }
+    .chat-msg-entry.holding {
+      background: rgba(0, 132, 255, 0.08) !important;
+      border-radius: 12px;
+      transition: background 0.15s ease;
+    }
+    .msg-edited-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9CA3AF;
+      margin-bottom: 2px;
+      display: inline-block;
+    }
+    .snap-msg-actions-popover {
+      position: fixed;
+      z-index: 10000;
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 6px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid #E5E7EB;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 140px;
+      animation: afModalAppear 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .smap-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #18181C;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: background 0.12s, color 0.12s;
+    }
+    .smap-btn:hover {
+      background: #F3F4F6;
+      color: #000;
+    }
+    .smap-btn.smap-danger {
+      color: #EF4444;
+    }
+    .smap-btn.smap-danger:hover {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+    .smap-btn span.smap-icon {
+      font-size: 15px;
+    }
+
+    /* INLINE MESSAGE EDITING BAR (Floats right above chat input) */
+    .chat-edit-inline-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border-top: 1.5px solid #0084FF;
+      padding: 8px 14px;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+      animation: afModalAppear 0.15s ease-out;
+    }
+    .chat-edit-inline-bar.active { display: flex; }
+    .ce-label {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #0084FF;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .ce-input {
+      flex: 1;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 16px;
+      padding: 6px 12px;
+      font-size: 13.5px;
+      outline: none;
+      color: #18181C;
+    }
+    .ce-input:focus { border-color: #0084FF; }
+    .ce-btn {
+      background: #0084FF;
+      color: #FFF;
+      border: none;
+      border-radius: 14px;
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ce-cancel-btn {
+      background: #F3F4F6;
+      color: #6B7280;
+      border: none;
+      border-radius: 14px;
+      padding: 6px 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* FRIEND PROFILE MODAL STYLING */
+    .friend-profile-sheet {
+      width: min(440px, 92vw);
+      max-height: 88vh;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 32px 90px rgba(0,0,0,0.32);
+      animation: afModalAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .friend-avatar-circle {
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .friend-avatar-circle:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+
+    /* AVATAR UPLOAD BUTTONS */
+    .bm-upload-photo-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: #F3F4F6;
+      border: 1.5px dashed #D1D5DB;
+      border-radius: 14px;
+      padding: 9px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #374151;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.15s;
+    }
+    .bm-upload-photo-btn:hover {
+      background: #FFFDE0;
+      border-color: #EAB308;
+      color: #854D0E;
+    }
   </style>
 
 </head>
@@ -3990,7 +4149,11 @@
 
         <div class="prof-bitmoji-stage" title="Click to edit your Bitmoji Avatar">
           <div class="prof-bitmoji-figure" id="profDrawerAvatar" title="Click to edit avatar">👤</div>
-          <button type="button" class="prof-edit-avatar-btn" id="profEditAvatarBtn" title="Edit Avatar">✏️ Edit Avatar</button>
+          <div style="display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap;">
+            <button type="button" class="prof-edit-avatar-btn" id="profEditAvatarBtn" title="Edit Bitmoji">✏️ Edit Bitmoji</button>
+            <button type="button" class="prof-edit-avatar-btn" id="profUploadAvatarBtn" title="Upload Photo from Computer / Phone" style="background:#FFFDE0; border-color:#FDE047; color:#854D0E;">🖼️ Upload Photo</button>
+          </div>
+          <input type="file" id="directAvatarFileInput" accept="image/*" style="display:none;" />
         </div>
 
         <div class="prof-identity">
@@ -4183,8 +4346,14 @@
           <div class="bm-styles-grid" id="bmVibeGrid"></div>
         </div>
 
-        <!-- Tab 4: Quick Presets / Emoji -->
+        <!-- Tab 4: Quick Presets / Emoji & Photo Upload -->
         <div class="bm-tab-pane" id="bmPanePresets">
+          <div class="bm-section-label">Upload Custom Image</div>
+          <button type="button" class="bm-upload-photo-btn" id="studioUploadPhotoBtn">
+            <span>📁</span> Choose Photo from Computer / Phone
+          </button>
+          <input type="file" id="studioAvatarFileInput" accept="image/*" style="display:none;" />
+          <div class="bm-section-label" style="margin-top:14px;">Or Pick an Emoji Preset</div>
           <div class="prof-avatar-grid" id="profAvatarGrid"></div>
           <div class="prof-avatar-custom-row">
             <input type="text" class="prof-avatar-custom-input" id="profAvatarCustomInput" placeholder="Or type any emoji…" maxlength="4" />
@@ -4193,6 +4362,77 @@
 
         <div class="bm-actions" style="margin-top:auto; padding-top:12px;">
           <button type="button" class="bm-save-btn" id="profAvatarSaveBtn">Save Bitmoji Avatar ✨</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- DEDICATED FRIEND PROFILE MODAL (Public View, No Settings) -->
+  <!-- ======================================================= -->
+  <div class="snap-profile-overlay" id="friendProfileModal" role="dialog" aria-modal="true" style="display:none; z-index:9999;">
+    <div class="snap-profile-sheet friend-profile-sheet" id="friendProfileSheet">
+      <div class="prof-sheet-header" style="background: linear-gradient(180deg, #0284C7 0%, #0369A1 38%, #BAE6FD 75%, #FFFFFF 100%); padding: 14px 16px 18px;">
+        <div class="prof-header-top">
+          <button type="button" class="prof-icon-btn" id="closeFriendProfileBtn" title="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span style="font-size:12.5px; font-weight:800; color:#FFFFFF; letter-spacing:0.04em; text-transform:uppercase;">Friend Profile</span>
+          <button type="button" class="prof-icon-btn" id="friendProfShareBtn" title="Share Friend">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/></svg>
+          </button>
+        </div>
+
+        <div class="prof-bitmoji-stage" style="height: 154px; pointer-events:none;">
+          <div class="prof-bitmoji-figure" id="fpAvatar" style="width:124px; height:124px; font-size:76px; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.25));">👤</div>
+        </div>
+
+        <div class="prof-identity" style="justify-content:center; text-align:center; margin-top:4px;">
+          <div class="prof-identity-text" style="align-items:center;">
+            <div class="prof-display-name" id="fpDisplayName" style="font-size:19px; font-weight:800; color:#111827;">Friend Name</div>
+            <div class="prof-username" id="fpUsername" style="font-size:13px; color:#6B7280; font-weight:600;">@username</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prof-sheet-body" style="padding: 16px 18px; overflow-y:auto;">
+        <!-- Public stats / badges -->
+        <div class="prof-stats-row" style="margin-bottom:14px; justify-content:center;">
+          <div class="prof-stat" id="fpStatus">📍 Friend</div>
+          <div class="prof-stat-dot"></div>
+          <div class="prof-stat" id="fpStreak">🔥 0-day Streak</div>
+        </div>
+
+        <!-- Quick Actions: Open Chat & Send Snap -->
+        <div style="display:flex; gap:10px; margin-bottom:16px;">
+          <button type="button" id="fpChatBtn" style="flex:1; background:#0084FF; color:#FFF; border:none; border-radius:16px; padding:11px 14px; font-weight:700; font-size:13.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(0,132,255,0.22); transition:transform 0.1s;">
+            💬 Open Chat
+          </button>
+          <button type="button" id="fpSnapBtn" style="flex:1; background:linear-gradient(135deg, #FFFC00 0%, #FBBF24 100%); color:#18181C; border:none; border-radius:16px; padding:11px 14px; font-weight:800; font-size:13.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(245,158,11,0.22); transition:transform 0.1s;">
+            📷 Send Snap
+          </button>
+        </div>
+
+        <!-- Friend Details Card -->
+        <div class="prof-list-card" style="margin-bottom:12px;">
+          <div class="prof-list-row" style="cursor:default;">
+            <div class="prof-row-icon" style="background:#EFF6FF; color:#0284C7;">🤝</div>
+            <div class="prof-row-copy">
+              <div class="prof-row-title">Snapchat Friend</div>
+              <div class="prof-row-sub" id="fpFriendshipSub">Connected on Snapchat Web</div>
+            </div>
+          </div>
+          <div class="prof-list-row" style="cursor:default;">
+            <div class="prof-row-icon" style="background:#FEF3C7; color:#D97706;">⚡</div>
+            <div class="prof-row-copy">
+              <div class="prof-row-title">Snap Streak</div>
+              <div class="prof-row-sub" id="fpStreakSub">Snap back daily within 24 hours to keep the fire lit!</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; padding:6px 0; font-size:11.5px; color:#9CA3AF; font-weight:500;">
+          🔒 Privacy Protected · Friend Profile View Only
         </div>
       </div>
     </div>
@@ -4278,7 +4518,7 @@
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <input type="text" class="search-text-input" placeholder="Search" />
+          <input type="text" class="search-text-input" id="sidebarSearchFriendsInput" placeholder="Search friends or chats..." />
           <div class="my-ai-shortcut-pill" id="myAiPillBtn" title="Chat with My AI">
             <span>My AI</span>
             <div class="my-ai-pill-avatar">🤖</div>
@@ -4501,6 +4741,14 @@
             <button type="button" class="rpb-dismiss-btn" id="rpbDismissBtn" title="Cancel Reply">✕</button>
           </div>
 
+          <!-- INLINE MESSAGE EDIT BAR -->
+          <div class="chat-edit-inline-bar" id="chatEditInlineBar">
+            <span class="ce-label">Editing</span>
+            <input type="text" class="ce-input" id="chatEditInputField" placeholder="Edit your message…" autocomplete="off" />
+            <button type="button" class="ce-btn" id="chatEditSaveBtn">Save</button>
+            <button type="button" class="ce-cancel-btn" id="chatEditCancelBtn">Cancel</button>
+          </div>
+
           <!-- STATE 1: Standard Input Bar -->
           <div class="standard-input-bar-wrap" id="standardInputWrap">
             <!-- Far-left Camera Button -->
@@ -4619,6 +4867,13 @@
             <p id="snapModalDesc">Photo snapped from camera!</p>
           </div>
         </div>
+      </div>
+
+      <!-- Floating Message Action Sheet / Popover (Hold Gesture: Edit / Copy / Delete) -->
+      <div class="snap-msg-actions-popover" id="snapMsgActionsPopover" style="display: none;">
+        <button type="button" class="smap-btn" id="smapCopyBtn"><span class="smap-icon">📋</span> Copy Text</button>
+        <button type="button" class="smap-btn" id="smapEditBtn"><span class="smap-icon">✏️</span> Edit Message</button>
+        <button type="button" class="smap-btn smap-danger" id="smapDeleteBtn"><span class="smap-icon">🗑️</span> Delete</button>
       </div>
 
       <!-- Story Upload Interface Modal -->
@@ -6488,10 +6743,12 @@
           const senderLabel = isMe ? 'ME' : (m.senderName || friendHeaderName);
           const senderClass = isMe ? 'is-me' : 'is-friend';
 
+          const editedTag = m.edited ? `<span class="msg-timestamp-tag" style="font-size:10px; color:#9CA3AF; margin-left:3px; font-style:italic;">(edited)</span>` : '';
           const headerHtml = `
             <div class="chat-msg-entry-header">
               <span class="sender-tag ${senderClass}">${senderLabel}</span>
               <span class="msg-timestamp-tag">${m.time}</span>
+              ${editedTag}
             </div>
           `;
 
@@ -6514,6 +6771,14 @@
               <span class="qrb-text">${escapeHtml(m.replyTo.text || 'Original message')}</span>
             `;
             contentWrap.appendChild(quotedBox);
+          }
+
+          // Show "Edited" label above text when edited
+          if (m.edited) {
+            const edBadge = document.createElement('span');
+            edBadge.className = 'msg-edited-badge';
+            edBadge.textContent = 'Edited';
+            contentWrap.appendChild(edBadge);
           }
 
           if (m.type === 'snap') {
@@ -6546,20 +6811,47 @@
           let swipeStartY = 0;
           let isDraggingSwipe = false;
           let replyTriggered = false;
+          let holdTimer = null;
+          let didHold = false;
+
+          const startHoldTimer = (evt) => {
+            didHold = false;
+            if (holdTimer) clearTimeout(holdTimer);
+            holdTimer = setTimeout(() => {
+              didHold = true;
+              entry.classList.add('holding');
+              if (navigator.vibrate) try { navigator.vibrate(40); } catch (_) {}
+              if (typeof window.openMsgActionsPopover === 'function') {
+                window.openMsgActionsPopover(m, entry, targetId, evt);
+              }
+            }, 450);
+          };
+
+          const clearHoldTimer = () => {
+            if (holdTimer) {
+              clearTimeout(holdTimer);
+              holdTimer = null;
+            }
+            entry.classList.remove('holding');
+          };
 
           entry.addEventListener('pointerdown', (e) => {
-            // Only primary pointer button
             if (e.button !== 0 && e.pointerType === 'mouse') return;
             swipeStartX = e.clientX;
             swipeStartY = e.clientY;
             isDraggingSwipe = false;
             replyTriggered = false;
+            startHoldTimer(e);
           });
 
           entry.addEventListener('pointermove', (e) => {
             if (swipeStartX === 0) return;
             const deltaX = e.clientX - swipeStartX;
             const deltaY = Math.abs(e.clientY - swipeStartY);
+
+            if (deltaX > 8 || deltaY > 8) {
+              clearHoldTimer();
+            }
 
             // Restrict to horizontal right swipe
             if (deltaX > 14 && deltaY < 32) {
@@ -6580,6 +6872,7 @@
           });
 
           const finishSwipe = () => {
+            clearHoldTimer();
             if (isDraggingSwipe) {
               entry.classList.remove('swiping');
               entry.style.transform = '';
@@ -6596,6 +6889,15 @@
 
           entry.addEventListener('pointerup', finishSwipe);
           entry.addEventListener('pointercancel', finishSwipe);
+
+          // Right click contextmenu trigger
+          entry.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            clearHoldTimer();
+            if (typeof window.openMsgActionsPopover === 'function') {
+              window.openMsgActionsPopover(m, entry, targetId, e);
+            }
+          });
 
           messageStream.appendChild(entry);
         }
@@ -6641,6 +6943,164 @@
     const rpbDismissBtn = document.getElementById('rpbDismissBtn');
     if (rpbDismissBtn) {
       rpbDismissBtn.addEventListener('click', dismissReplyBanner);
+    }
+
+    // =========================================================
+    // MESSAGE HOLD POPUP (EDIT / COPY / DELETE) ENGINE
+    // =========================================================
+    let activeActionMsg = null;
+    let activeActionChatId = null;
+    let messageBeingEdited = null;
+    let chatBeingEdited = null;
+
+    const snapMsgActionsPopover = document.getElementById('snapMsgActionsPopover');
+    const smapCopyBtn = document.getElementById('smapCopyBtn');
+    const smapEditBtn = document.getElementById('smapEditBtn');
+    const smapDeleteBtn = document.getElementById('smapDeleteBtn');
+    const chatEditInlineBar = document.getElementById('chatEditInlineBar');
+    const chatEditInputField = document.getElementById('chatEditInputField');
+    const chatEditSaveBtn = document.getElementById('chatEditSaveBtn');
+    const chatEditCancelBtn = document.getElementById('chatEditCancelBtn');
+
+    window.openMsgActionsPopover = function(msg, entryEl, chatId, evt) {
+      if (!snapMsgActionsPopover || !msg) return;
+      activeActionMsg = msg;
+      activeActionChatId = chatId;
+
+      // Only allow editing text messages sent by ME
+      if (smapEditBtn) {
+        const canEdit = (msg.sender === 'me' && msg.text && msg.type !== 'snap' && msg.type !== 'image' && msg.type !== 'voicenote');
+        smapEditBtn.style.display = canEdit ? 'flex' : 'none';
+      }
+
+      snapMsgActionsPopover.style.display = 'flex';
+
+      const rect = entryEl ? entryEl.getBoundingClientRect() : { left: 40, top: 100 };
+      const clickX = evt && evt.clientX ? evt.clientX : (rect.left + 50);
+      const clickY = evt && evt.clientY ? evt.clientY : (rect.top + 20);
+
+      const popWidth = 160;
+      const popHeight = 120;
+      const left = Math.min(window.innerWidth - popWidth - 14, Math.max(14, clickX));
+      const top = Math.min(window.innerHeight - popHeight - 14, Math.max(14, clickY - 24));
+
+      snapMsgActionsPopover.style.left = `${left}px`;
+      snapMsgActionsPopover.style.top = `${top}px`;
+    };
+
+    function closeMsgActionsPopover() {
+      if (snapMsgActionsPopover) snapMsgActionsPopover.style.display = 'none';
+      activeActionMsg = null;
+    }
+
+    document.addEventListener('pointerdown', (e) => {
+      if (snapMsgActionsPopover && snapMsgActionsPopover.style.display !== 'none') {
+        if (!snapMsgActionsPopover.contains(e.target) && !e.target.closest('.chat-msg-entry')) {
+          closeMsgActionsPopover();
+        }
+      }
+    });
+
+    if (smapCopyBtn) {
+      smapCopyBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!activeActionMsg) return;
+        const textToCopy = activeActionMsg.text || activeActionMsg.content || 'Photo';
+        try {
+          if (navigator.clipboard) await navigator.clipboard.writeText(textToCopy);
+        } catch (_) {}
+        showSnapToast("Copied to clipboard! 📋");
+        closeMsgActionsPopover();
+      });
+    }
+
+    if (smapEditBtn) {
+      smapEditBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!activeActionMsg) return;
+        messageBeingEdited = activeActionMsg;
+        chatBeingEdited = activeActionChatId;
+        closeMsgActionsPopover();
+
+        if (chatEditInlineBar && chatEditInputField) {
+          chatEditInlineBar.classList.add('active');
+          chatEditInputField.value = messageBeingEdited.text || '';
+          setTimeout(() => chatEditInputField.focus(), 60);
+        }
+      });
+    }
+
+    function saveEditedMessage() {
+      if (!messageBeingEdited || !chatBeingEdited) return;
+      const newText = chatEditInputField ? chatEditInputField.value.trim() : '';
+      if (!newText) {
+        showSnapToast("Message cannot be empty.");
+        return;
+      }
+
+      messageBeingEdited.text = newText;
+      messageBeingEdited.edited = true;
+      saveConversationsToStorage();
+      renderConversation(chatBeingEdited);
+      updateSidebarPreview(chatBeingEdited);
+      showSnapToast("Message updated! ✨");
+
+      // Broadcast edit to friend if active
+      if (p2pRealtimeChannel && currentUserSession && chatBeingEdited !== 'myai') {
+        try {
+          p2pRealtimeChannel.send({
+            type: 'broadcast',
+            event: 'message_edited',
+            payload: {
+              msgId: messageBeingEdited.id,
+              text: newText,
+              senderId: currentUserSession.id
+            }
+          }).catch(() => {});
+        } catch (_) {}
+      }
+
+      if (chatEditInlineBar) chatEditInlineBar.classList.remove('active');
+      messageBeingEdited = null;
+      chatBeingEdited = null;
+    }
+
+    if (chatEditSaveBtn) chatEditSaveBtn.addEventListener('click', saveEditedMessage);
+    if (chatEditInputField) {
+      chatEditInputField.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveEditedMessage();
+        if (e.key === 'Escape') {
+          if (chatEditInlineBar) chatEditInlineBar.classList.remove('active');
+          messageBeingEdited = null;
+          chatBeingEdited = null;
+        }
+      });
+    }
+    if (chatEditCancelBtn) {
+      chatEditCancelBtn.addEventListener('click', () => {
+        if (chatEditInlineBar) chatEditInlineBar.classList.remove('active');
+        messageBeingEdited = null;
+        chatBeingEdited = null;
+      });
+    }
+
+    if (smapDeleteBtn) {
+      smapDeleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!activeActionMsg || !activeActionChatId) return;
+        const list = conversations[activeActionChatId];
+        if (Array.isArray(list)) {
+          const idx = list.indexOf(activeActionMsg);
+          if (idx !== -1) {
+            list.splice(idx, 1);
+            saveConversationsToStorage();
+            renderConversation(activeActionChatId);
+            updateSidebarPreview(activeActionChatId);
+            showSnapToast("Message deleted 🗑️");
+          }
+        }
+        closeMsgActionsPopover();
+      });
     }
 
     function createChatImageCard(imgObj) {
@@ -6850,19 +7310,13 @@
           showSnapToast('Snap has expired ⏱️');
           return;
         }
-        if (snapObj.status === 'opened') {
-          showSnapToast('Snap already viewed 🔒 Snaps can only be opened once!');
-          return;
-        }
-        openSnapViewer(snapObj, card, chatId, false);
+        // Always allow opening/replaying photos!
+        const isReplay = (snapObj.status === 'opened');
+        openSnapViewer(snapObj, card, chatId, isReplay);
       });
 
       card.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        if (snapObj.status === 'opened') {
-          showSnapToast('Snap already viewed 🔒 Snaps can only be opened once!');
-          return;
-        }
       });
 
       return card;
@@ -6875,8 +7329,8 @@
         card.innerHTML = `
           <span>⏱️</span>
           <div>
-            <div><b>Snap Disappeared</b></div>
-            <div style="font-size:11px; color:#9CA3AF; margin-top:2px;">Automatically deleted after 12 hours.</div>
+            <div><b>Snap Expired</b></div>
+            <div style="font-size:11px; color:#9CA3AF; margin-top:2px;">Automatically expired after 24 hours.</div>
           </div>
         `;
         return;
@@ -6899,8 +7353,8 @@
         card.innerHTML = `
           ${ICON_OPENED_HTML}
           <div class="snap-card-body">
-            <span class="snap-title-opened">${isMe ? 'Opened' : 'Opened'}</span>
-            <span class="snap-subtitle-opened" style="font-size:11px; color:#9CA3AF; margin-top:2px;">Viewed once · Disappeared 🔒</span>
+            <span class="snap-title-opened">${isMe ? 'Delivered' : 'Photo Snap'}</span>
+            <span class="snap-subtitle-opened" style="font-size:11px; color:#0084FF; font-weight:600; margin-top:2px;">Tap to view photo 📸</span>
             ${badgeHtml}
           </div>
         `;
@@ -6910,8 +7364,8 @@
     let timerInterval = null;
     function openSnapViewer(snapObj, cardEl, chatId, isReplay = false) {
       currentOpenSnapObj = snapObj;
-      snapModalTitle.textContent = isReplay ? `Replaying Snap: ${snapObj.title}` : snapObj.title;
-      snapModalDesc.textContent = snapObj.content;
+      snapModalTitle.textContent = isReplay ? (snapObj.title || 'Photo Snap 📸') : (snapObj.title || 'New Snap');
+      snapModalDesc.textContent = snapObj.content || '';
 
       const modalImg = document.getElementById('snapModalImg');
       const modalFallback = document.getElementById('snapModalFallback');
@@ -6926,20 +7380,26 @@
 
       snapModal.classList.add('active');
 
-      let secondsLeft = 5;
       const timerEl = document.getElementById('snapTimer');
-      timerEl.textContent = `${secondsLeft}s`;
-
       clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        secondsLeft--;
-        if (secondsLeft > 0) {
-          timerEl.textContent = `${secondsLeft}s`;
-        } else {
-          clearInterval(timerInterval);
-          closeSnapViewer(snapObj, cardEl, chatId);
-        }
-      }, 1000);
+
+      // If replaying or photo already viewed once, leave open until user taps close button
+      if (isReplay || snapObj.status === 'opened') {
+        if (timerEl) timerEl.textContent = '✕';
+      } else {
+        let secondsLeft = 8;
+        if (timerEl) timerEl.textContent = `${secondsLeft}s`;
+
+        timerInterval = setInterval(() => {
+          secondsLeft--;
+          if (secondsLeft > 0) {
+            if (timerEl) timerEl.textContent = `${secondsLeft}s`;
+          } else {
+            clearInterval(timerInterval);
+            closeSnapViewer(snapObj, cardEl, chatId);
+          }
+        }, 1000);
+      }
     }
 
     function closeSnapViewer(snapObj, cardEl, chatId) {
@@ -7309,11 +7769,225 @@
       }
     }
 
+    // =========================================================
+    // DEDICATED FRIEND PROFILE MODAL LOGIC (NO SETTINGS)
+    // =========================================================
+    const friendProfileModal = document.getElementById('friendProfileModal');
+    const closeFriendProfileBtn = document.getElementById('closeFriendProfileBtn');
+    const friendProfShareBtn = document.getElementById('friendProfShareBtn');
+    const fpAvatar = document.getElementById('fpAvatar');
+    const fpDisplayName = document.getElementById('fpDisplayName');
+    const fpUsername = document.getElementById('fpUsername');
+    const fpStatus = document.getElementById('fpStatus');
+    const fpStreak = document.getElementById('fpStreak');
+    const fpChatBtn = document.getElementById('fpChatBtn');
+    const fpSnapBtn = document.getElementById('fpSnapBtn');
+    let currentFriendModalRow = null;
+
+    function openFriendProfileModal(row) {
+      if (!row) return;
+      currentFriendModalRow = row;
+      const name = row.dataset.name || row.dataset.header || 'Friend';
+      const handle = (row.dataset.handle || row.dataset.chat || row.dataset.name || 'friend').toLowerCase();
+      const initial = row.dataset.initial || '👤';
+      const status = row.dataset.status || 'Active Friend';
+      const chatId = (row.dataset.chat || handle).toLowerCase();
+
+      if (fpDisplayName) fpDisplayName.textContent = name;
+      if (fpUsername) fpUsername.textContent = '@' + handle;
+      if (fpStatus) fpStatus.textContent = '📍 ' + (status.length > 25 ? status.slice(0, 25) + '…' : status);
+
+      // Display streak
+      let streakCount = 0;
+      try {
+        const streaks = JSON.parse(localStorage.getItem('snap_streaks_v1') || '{}');
+        if (streaks[chatId] && streaks[chatId].count) streakCount = streaks[chatId].count;
+      } catch (_) {}
+      if (fpStreak) fpStreak.textContent = `🔥 ${streakCount}-day Streak`;
+
+      // Set avatar
+      if (fpAvatar && typeof setAvatarContent === 'function') {
+        setAvatarContent(fpAvatar, initial, '👤');
+      } else if (fpAvatar) {
+        fpAvatar.textContent = initial;
+      }
+
+      if (friendProfileModal) {
+        friendProfileModal.style.display = 'flex';
+        friendProfileModal.classList.add('is-visible');
+      }
+    }
+
+    function closeFriendProfileModal() {
+      if (friendProfileModal) {
+        friendProfileModal.style.display = 'none';
+        friendProfileModal.classList.remove('is-visible');
+      }
+      currentFriendModalRow = null;
+    }
+
+    if (closeFriendProfileBtn) closeFriendProfileBtn.addEventListener('click', closeFriendProfileModal);
+    if (friendProfileModal) {
+      friendProfileModal.addEventListener('click', (e) => {
+        if (e.target === friendProfileModal) closeFriendProfileModal();
+      });
+    }
+
+    if (fpChatBtn) {
+      fpChatBtn.addEventListener('click', () => {
+        const target = currentFriendModalRow;
+        closeFriendProfileModal();
+        if (target) openFriendChat(target);
+      });
+    }
+
+    if (fpSnapBtn) {
+      fpSnapBtn.addEventListener('click', () => {
+        const target = currentFriendModalRow;
+        closeFriendProfileModal();
+        if (target) {
+          activeSnapTargetChatId = target.dataset.chat;
+          document.querySelectorAll('.friend-chat-item').forEach(r => r.classList.remove('active'));
+          target.classList.add('active');
+          showCamera(target.dataset.chat);
+          showSnapToast(`Camera ready for ${target.dataset.name}! 📸 Tap shutter to send snap.`);
+        }
+      });
+    }
+
+    if (friendProfShareBtn) {
+      friendProfShareBtn.addEventListener('click', async () => {
+        if (!currentFriendModalRow) return;
+        const handle = currentFriendModalRow.dataset.handle || currentFriendModalRow.dataset.chat || 'friend';
+        const shareText = `Add @${handle} on Snapchat Web!`;
+        try {
+          if (navigator.clipboard) await navigator.clipboard.writeText(shareText);
+        } catch (_) {}
+        showSnapToast(`Copied @${handle}'s profile link to clipboard! 📋`);
+      });
+    }
+
+    // Chat Header Avatar Click -> Opens Friend Profile Modal
+    const headerAvatarBtn = document.getElementById('activeChatAvatar');
+    if (headerAvatarBtn) {
+      headerAvatarBtn.style.cursor = 'pointer';
+      headerAvatarBtn.title = 'View Friend Profile';
+      headerAvatarBtn.addEventListener('click', () => {
+        const activeRow = document.querySelector('.friend-chat-item.active');
+        if (activeRow) openFriendProfileModal(activeRow);
+      });
+    }
+
+    // =========================================================
+    // SIDEBAR FRIEND SEARCH BAR FILTER
+    // =========================================================
+    const sidebarSearchFriendsInput = document.getElementById('sidebarSearchFriendsInput');
+    if (sidebarSearchFriendsInput) {
+      sidebarSearchFriendsInput.addEventListener('input', (e) => {
+        const q = (e.target.value || '').trim().toLowerCase();
+        const rows = document.querySelectorAll('#friendsListContainer .friend-chat-item');
+        rows.forEach(r => {
+          const name = (r.dataset.name || '').toLowerCase();
+          const handle = (r.dataset.handle || r.dataset.chat || '').toLowerCase();
+          const status = (r.dataset.status || '').toLowerCase();
+          const isMyAi = r.dataset.chat === 'myai';
+          if (!q || isMyAi || name.includes(q) || handle.includes(q) || status.includes(q)) {
+            r.style.display = 'flex';
+          } else {
+            r.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    // =========================================================
+    // AVATAR IMAGE UPLOADING (DIRECT & BITMOJI STUDIO)
+    // =========================================================
+    const directAvatarFileInput = document.getElementById('directAvatarFileInput');
+    const profUploadAvatarBtn = document.getElementById('profUploadAvatarBtn');
+    const studioAvatarFileInput = document.getElementById('studioAvatarFileInput');
+    const studioUploadPhotoBtn = document.getElementById('studioUploadPhotoBtn');
+
+    function handleAvatarFileUpload(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showSnapToast('Please select a valid image file (JPG, PNG, WEBP).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const rawData = ev.target.result;
+        compressChatImage(rawData, 256, 0.78, (compressedDataUrl) => {
+          if (typeof applyAvatar === 'function') {
+            applyAvatar(compressedDataUrl);
+          } else {
+            if (window.currentUserSession) window.currentUserSession.avatar = compressedDataUrl;
+            try {
+              const sess = JSON.parse(localStorage.getItem('snap_active_session') || '{}');
+              sess.avatar = compressedDataUrl;
+              localStorage.setItem('snap_active_session', JSON.stringify(sess));
+            } catch (_) {}
+            ['profDrawerAvatar', 'profDrawerMiniAvatar', 'topBarAvatarIcon', 'profPublicAvatar'].forEach(id => {
+              const el = document.getElementById(id);
+              if (el && typeof setAvatarContent === 'function') setAvatarContent(el, compressedDataUrl, '👤');
+            });
+            showSnapToast("Custom photo avatar updated! 🖼️✨");
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    if (profUploadAvatarBtn && directAvatarFileInput) {
+      profUploadAvatarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        directAvatarFileInput.click();
+      });
+      directAvatarFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) handleAvatarFileUpload(file);
+        e.target.value = '';
+      });
+    }
+
+    if (studioUploadPhotoBtn && studioAvatarFileInput) {
+      studioUploadPhotoBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        studioAvatarFileInput.click();
+      });
+      studioAvatarFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            compressChatImage(ev.target.result, 256, 0.78, (compressedDataUrl) => {
+              const preview = document.getElementById('bmPreviewAvatar');
+              if (preview) {
+                preview.innerHTML = `<img src="${compressedDataUrl}" alt="Avatar" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" />`;
+              }
+              if (typeof currentBitmoji !== 'undefined') {
+                currentBitmoji.preset = compressedDataUrl;
+              }
+              showSnapToast("Photo loaded into preview! Tap 'Save Bitmoji Avatar ✨' to apply.");
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+        e.target.value = '';
+      });
+    }
+
     function bindFriendRowEvents(row) {
       if (!row) return;
 
       row.addEventListener('click', async (e) => {
         if (e.target.closest('.row-cam-icon')) return;
+        // Clicking avatar shell or avatar circle opens Friend Profile Modal (No settings!)
+        if (e.target.closest('.friend-avatar-shell') || e.target.closest('.friend-avatar-circle')) {
+          e.stopPropagation();
+          openFriendProfileModal(row);
+          return;
+        }
         if (row.classList.contains('active') && isChatOpen()) {
           showCamera();
           return;
