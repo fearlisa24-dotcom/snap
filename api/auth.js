@@ -158,6 +158,47 @@ module.exports = async (req, res) => {
       });
     }
 
+    // 4. Update Avatar Flow
+    if (action === "update_avatar") {
+      const userId = body.userId;
+      const username = (body.username || "").toLowerCase();
+      const avatar = body.avatar;
+      if (!avatar) return res.status(400).json({ success: false, error: "Avatar is required." });
+
+      let targetUser = null;
+      if (userId) {
+        const { data: u } = await supabaseAdmin.auth.admin.getUserById(userId);
+        targetUser = u?.user;
+      }
+      if (!targetUser && username) {
+        const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
+        targetUser = (listData?.users || []).find(u =>
+          (u.user_metadata?.username || "").toLowerCase() === username ||
+          u.email.toLowerCase() === (username + "@snapchat.com")
+        );
+      }
+
+      if (targetUser) {
+        await supabaseAdmin.auth.admin.updateUserById(targetUser.id, {
+          user_metadata: {
+            ...targetUser.user_metadata,
+            avatar: avatar
+          }
+        });
+        return res.status(200).json({
+          success: true,
+          message: "Avatar saved to Supabase profile! ✨",
+          avatar: avatar
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Avatar saved locally! ✨",
+        avatar: avatar
+      });
+    }
+
     return res.status(400).json({ success: false, error: "Unknown action specified." });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });

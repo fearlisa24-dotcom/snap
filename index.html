@@ -536,31 +536,51 @@
     .streak-warning { color: #DC2626 !important; animation: streakPulse 0.6s ease infinite alternate; }
     @keyframes streakPulse { from { opacity: 1; } to { opacity: 0.5; } }
 
-    /* Avatar Picker */
+    /* Avatar Picker & Bitmoji Studio */
     .prof-edit-avatar-btn {
-      margin-top: 8px;
-      background: rgba(0,0,0,0.06);
-      border: 1px solid #E5E7EB;
-      border-radius: 20px;
-      padding: 6px 16px;
-      font-size: 12.5px;
-      font-weight: 600;
+      position: relative;
+      z-index: 10;
+      margin-top: 4px;
+      background: #FFFFFF;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 22px;
+      padding: 7px 20px;
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
-      color: #374151;
-      transition: background 0.15s;
+      color: #18181C;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.14);
+      pointer-events: auto !important;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .prof-edit-avatar-btn:hover { background: rgba(0,0,0,0.1); }
+    .prof-edit-avatar-btn:hover {
+      background: #FFFC00;
+      transform: scale(1.06);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+    }
+    .prof-edit-avatar-btn:active {
+      transform: scale(0.97);
+    }
 
-    /* Snapchat Bitmoji Studio Customizer */
+    /* Snapchat Bitmoji Studio Customizer Full Overlay */
     .prof-avatar-picker.bitmoji-studio {
-      background: #FFF;
-      border-radius: 20px;
-      padding: 16px;
-      margin: 10px 0 6px;
-      border: 1px solid #E5E7EB;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-      max-height: 480px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #FFFFFF;
+      border-radius: 28px;
+      padding: 20px 22px;
+      z-index: 100;
       overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.28);
+      display: none;
+      flex-direction: column;
+      animation: afModalAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .bm-studio-header {
       display: flex;
@@ -3214,6 +3234,7 @@
     .snap-profile-overlay.is-visible { display: flex; }
 
     .snap-profile-sheet {
+      position: relative;
       width: min(480px, 100%);
       max-height: min(880px, 92vh);
       background: #FFFFFF;
@@ -3255,23 +3276,33 @@
     .prof-header-actions { display: flex; gap: 8px; }
 
     .prof-bitmoji-stage {
-      height: 168px;
+      height: 184px;
       display: flex;
-      align-items: flex-end;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      pointer-events: none;
+      gap: 6px;
+      cursor: pointer;
+      pointer-events: auto !important;
     }
     .prof-bitmoji-figure {
-      width: 148px;
-      height: 148px;
+      width: 140px;
+      height: 140px;
       border-radius: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 92px;
+      font-size: 86px;
       line-height: 1;
       filter: drop-shadow(0 10px 18px rgba(0,0,0,0.28));
       overflow: hidden;
+      cursor: pointer;
+      pointer-events: auto !important;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .prof-bitmoji-figure:hover {
+      transform: scale(1.04);
+      filter: drop-shadow(0 14px 24px rgba(0,0,0,0.35));
     }
     .prof-bitmoji-figure img {
       width: 100%;
@@ -3957,63 +3988,9 @@
           </div>
         </div>
 
-        <div class="prof-bitmoji-stage">
-          <div class="prof-bitmoji-figure" id="profDrawerAvatar">👤</div>
-          <button type="button" class="prof-edit-avatar-btn" id="profEditAvatarBtn" title="Edit Avatar">✏️ Edit</button>
-        </div>
-
-        <!-- Snapchat Bitmoji Studio Customizer Modal -->
-        <div class="prof-avatar-picker bitmoji-studio" id="profAvatarPicker" style="display:none;">
-          <div class="bm-studio-header">
-            <span class="bm-studio-title">Snapchat Bitmoji Studio ✨</span>
-            <button type="button" class="bm-studio-close" id="bmStudioCloseBtn" title="Close">✕</button>
-          </div>
-
-          <!-- Live Preview Character -->
-          <div class="bm-preview-box">
-            <div class="bm-preview-avatar" id="bmPreviewAvatar"></div>
-            <div class="bm-preview-hint">Tap any tone, hair, or outfit below to customize</div>
-          </div>
-
-          <!-- Studio Tabs -->
-          <div class="bm-tabs">
-            <button type="button" class="bm-tab active" data-tab="skin">🎨 Skin</button>
-            <button type="button" class="bm-tab" data-tab="hair">💇 Hair</button>
-            <button type="button" class="bm-tab" data-tab="vibe">🕶️ Vibe</button>
-            <button type="button" class="bm-tab" data-tab="presets">🎭 Presets</button>
-          </div>
-
-          <!-- Tab 1: Skin Tone -->
-          <div class="bm-tab-pane active" id="bmPaneSkin">
-            <div class="bm-section-label">Select Skin Tone</div>
-            <div class="bm-swatches-row" id="bmSkinSwatches"></div>
-          </div>
-
-          <!-- Tab 2: Hair Style & Color -->
-          <div class="bm-tab-pane" id="bmPaneHair">
-            <div class="bm-section-label">Hair Color</div>
-            <div class="bm-swatches-row" id="bmHairColors"></div>
-            <div class="bm-section-label" style="margin-top:10px;">Hair Style</div>
-            <div class="bm-styles-grid" id="bmHairStyles"></div>
-          </div>
-
-          <!-- Tab 3: Outfit & Vibe -->
-          <div class="bm-tab-pane" id="bmPaneVibe">
-            <div class="bm-section-label">Outfit / Character Vibe</div>
-            <div class="bm-styles-grid" id="bmVibeGrid"></div>
-          </div>
-
-          <!-- Tab 4: Quick Presets / Emoji -->
-          <div class="bm-tab-pane" id="bmPanePresets">
-            <div class="prof-avatar-grid" id="profAvatarGrid"></div>
-            <div class="prof-avatar-custom-row">
-              <input type="text" class="prof-avatar-custom-input" id="profAvatarCustomInput" placeholder="Or type any emoji…" maxlength="4" />
-            </div>
-          </div>
-
-          <div class="bm-actions">
-            <button type="button" class="bm-save-btn" id="profAvatarSaveBtn">Save Bitmoji Avatar ✨</button>
-          </div>
+        <div class="prof-bitmoji-stage" title="Click to edit your Bitmoji Avatar">
+          <div class="prof-bitmoji-figure" id="profDrawerAvatar" title="Click to edit avatar">👤</div>
+          <button type="button" class="prof-edit-avatar-btn" id="profEditAvatarBtn" title="Edit Avatar">✏️ Edit Avatar</button>
         </div>
 
         <div class="prof-identity">
@@ -4038,6 +4015,19 @@
             <div class="prof-stat" id="profDrawerScore">🔥 0</div>
             <div class="prof-stat-dot"></div>
             <div class="prof-stat" id="profDrawerFriendsCount">👥 0</div>
+          </div>
+
+          <!-- Edit Avatar / Bitmoji Studio Quick Action -->
+          <div class="prof-card" id="profEditBitmojiCard" style="display:flex; align-items:center; gap:12px; cursor:pointer; background:linear-gradient(135deg, #FFFDE0 0%, #FFFBEB 100%); border:1.5px solid #FDE047;">
+            <div class="prof-plus-icon" style="background:#FFFC00; font-size:22px; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.1);">🎨</div>
+            <div class="prof-card-copy" style="flex:1;">
+              <div class="prof-card-title-row">
+                <span class="prof-card-title" style="color:#854D0E; font-weight:800;">Edit Bitmoji & Avatar ✨</span>
+                <span class="prof-new-tag" style="background:#EAB308; color:#fff;">Studio</span>
+              </div>
+              <div class="prof-card-sub" style="color:#A16207;">Change skin tones, hair styles, outfits & vibes</div>
+            </div>
+            <span class="prof-card-chevron" style="color:#CA8A04; font-size:18px; font-weight:800;">›</span>
           </div>
 
           <div class="prof-card prof-plus-card" id="profSnapPlusCard">
@@ -4143,6 +4133,66 @@
             <div class="prof-public-handle" id="profPublicHandle">@username</div>
             <p class="prof-public-bio" id="profPublicBio">This is how people see you on Snapchat. Your public profile shows your display name, username, and Bitmoji.</p>
           </div>
+        </div>
+      </div>
+
+      <!-- Snapchat Bitmoji Studio Customizer Full Overlay -->
+      <div class="prof-avatar-picker bitmoji-studio" id="profAvatarPicker" style="display:none;">
+        <div class="bm-studio-header">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">🎨</span>
+            <div>
+              <div class="bm-studio-title">Snapchat Bitmoji Studio</div>
+              <div style="font-size:11px; color:#71717A; font-weight:500;">Customize skin, hair, vibes & outfit</div>
+            </div>
+          </div>
+          <button type="button" class="bm-studio-close" id="bmStudioCloseBtn" title="Close Studio">✕</button>
+        </div>
+
+        <!-- Live Preview Character -->
+        <div class="bm-preview-box">
+          <div class="bm-preview-avatar" id="bmPreviewAvatar"></div>
+          <div class="bm-preview-hint">Tap any tone, hair, or outfit below to style yourself</div>
+        </div>
+
+        <!-- Studio Tabs -->
+        <div class="bm-tabs">
+          <button type="button" class="bm-tab active" data-tab="skin">🎨 Skin</button>
+          <button type="button" class="bm-tab" data-tab="hair">💇 Hair</button>
+          <button type="button" class="bm-tab" data-tab="vibe">🕶️ Vibe</button>
+          <button type="button" class="bm-tab" data-tab="presets">🎭 Presets</button>
+        </div>
+
+        <!-- Tab 1: Skin Tone -->
+        <div class="bm-tab-pane active" id="bmPaneSkin">
+          <div class="bm-section-label">Select Skin Tone</div>
+          <div class="bm-swatches-row" id="bmSkinSwatches"></div>
+        </div>
+
+        <!-- Tab 2: Hair Style & Color -->
+        <div class="bm-tab-pane" id="bmPaneHair">
+          <div class="bm-section-label">Hair Color</div>
+          <div class="bm-swatches-row" id="bmHairColors"></div>
+          <div class="bm-section-label" style="margin-top:10px;">Hair Style</div>
+          <div class="bm-styles-grid" id="bmHairStyles"></div>
+        </div>
+
+        <!-- Tab 3: Outfit & Vibe -->
+        <div class="bm-tab-pane" id="bmPaneVibe">
+          <div class="bm-section-label">Outfit / Character Vibe</div>
+          <div class="bm-styles-grid" id="bmVibeGrid"></div>
+        </div>
+
+        <!-- Tab 4: Quick Presets / Emoji -->
+        <div class="bm-tab-pane" id="bmPanePresets">
+          <div class="prof-avatar-grid" id="profAvatarGrid"></div>
+          <div class="prof-avatar-custom-row">
+            <input type="text" class="prof-avatar-custom-input" id="profAvatarCustomInput" placeholder="Or type any emoji…" maxlength="4" />
+          </div>
+        </div>
+
+        <div class="bm-actions" style="margin-top:auto; padding-top:12px;">
+          <button type="button" class="bm-save-btn" id="profAvatarSaveBtn">Save Bitmoji Avatar ✨</button>
         </div>
       </div>
     </div>
@@ -10664,30 +10714,66 @@
         });
       });
 
-      // Toggle modal visibility
-      editBtn.addEventListener('click', () => {
-        const isVisible = picker.style.display !== 'none';
-        picker.style.display = isVisible ? 'none' : 'block';
-        if (!isVisible) updateLivePreview();
-      });
+      // Open / Close Bitmoji Studio
+      function openStudio() {
+        picker.style.display = 'flex';
+        updateLivePreview();
+      }
+
+      function closeStudio() {
+        picker.style.display = 'none';
+      }
+
+      window.openBitmojiStudio = openStudio;
+      window.closeBitmojiStudio = closeStudio;
+
+      // Multiple triggers to open Studio
+      if (editBtn) editBtn.addEventListener('click', (e) => { e.stopPropagation(); openStudio(); });
+      const drawerAvatarFigure = document.getElementById('profDrawerAvatar');
+      if (drawerAvatarFigure) drawerAvatarFigure.addEventListener('click', (e) => { e.stopPropagation(); openStudio(); });
+      const editCard = document.getElementById('profEditBitmojiCard');
+      if (editCard) editCard.addEventListener('click', (e) => { e.stopPropagation(); openStudio(); });
 
       if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          picker.style.display = 'none';
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeStudio();
         });
       }
 
       // Apply and save avatar
-      function applyAvatar(avatarVal) {
+      async function applyAvatar(avatarVal) {
         if (!avatarVal) return;
         if (window.currentUserSession) window.currentUserSession.avatar = avatarVal;
 
+        // 1. Update localStorage session
         try {
           const sess = JSON.parse(localStorage.getItem('snap_active_session') || '{}');
           sess.avatar = avatarVal;
           localStorage.setItem('snap_active_session', JSON.stringify(sess));
+
+          // 2. Update registered users list
+          const users = JSON.parse(localStorage.getItem('snap_registered_users') || '[]');
+          const idx = users.findIndex(u => (u.id && u.id === sess.id) || (u.username && sess.username && u.username.toLowerCase() === sess.username.toLowerCase()));
+          if (idx !== -1) {
+            users[idx].avatar = avatarVal;
+            localStorage.setItem('snap_registered_users', JSON.stringify(users));
+          }
+
+          // 3. Persist to Supabase Auth metadata via backend
+          fetch('/api/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'update_avatar',
+              userId: sess.id,
+              username: sess.username,
+              avatar: avatarVal
+            })
+          }).catch(err => console.warn('Supabase avatar sync warning:', err));
         } catch (_) {}
 
+        // 4. Update all UI avatar elements immediately
         if (typeof setAvatarContent === 'function') {
           setAvatarContent(document.getElementById('profDrawerAvatar'), avatarVal, '👤');
           setAvatarContent(document.getElementById('profDrawerMiniAvatar'), avatarVal, '👤');
@@ -10700,14 +10786,15 @@
           });
         }
 
-        picker.style.display = 'none';
+        closeStudio();
         if (typeof showSnapToast === 'function') {
           showSnapToast("Your custom Bitmoji has been saved! Looking sharp 🔥");
         }
       }
 
       if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
+        saveBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
           const finalVal = currentBitmoji.preset || generateBitmojiSvg(currentBitmoji);
           applyAvatar(finalVal);
         });
